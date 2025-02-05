@@ -55,7 +55,7 @@ class ItemTest extends TestCase
 
     //商品検索
     public function test_search_item(){
-        $response = $this->get('/item?search_item=ノートPC');
+        $response = $this->get('/?search=ノートPC');
         $expected_data = [
             'name' => 'ノートPC',
             'price' => 45000,
@@ -109,7 +109,7 @@ class ItemTest extends TestCase
             'comment' => 'テストコメント'
         ]);
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
         $this->assertDatabaseHas('comments',[
             'user_id' => 1,
             'item_id' => 1,
