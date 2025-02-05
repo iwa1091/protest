@@ -20,7 +20,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 |
 */
 
-Route::get('/',[ItemController::class, 'index']);
+Route::get('/',[ItemController::class, 'index'])->name('items.list');
 Route::get('/item/{item}',[ItemController::class, 'detail'])->name('item.detail');
 Route::get('/item', [ItemController::class, 'search']);
 

@@ -7,40 +7,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
-use App\Models\Like;
 use App\Models\Category;
 use App\Models\Condition;
 use App\Models\CategoryItem;
 
 class ItemController extends Controller
 {
-    protected $previous_query;
-
-    public function __construct()
-    {
-        $this->previous_query = $this->getPreviousQuery();
-    }
-
     public function index(Request $request){
-        if ($request->page == 'mylist'){
-            if ($this->previous_query !== null){
-                $items = Like::where('user_id', Auth::id())
-                    ->whereHas('item', function ($query) {
-                        $query->where('name', 'like', '%' . $this->previous_query . '%');
-                    })
-                    ->get()
-                    ->map(function ($like_item) {
-                        return $like_item->item;
-                    });
-            }else{
-                $items = Like::where('user_id', Auth::id())->get()->map(function ($like_item) {
-                    return $like_item->item;
-                });
-            }
-        }else {
-            $items = Item::where('user_id', '<>', Auth::id())->get();
+        $tab = $request->query('tab', 'recommend');
+        $search = $request->query('search');
+        $query = Item::query();
+        $query->where('user_id', '<>', Auth::id());
+
+        if ($tab === 'mylist'){
+            $query->whereIn('id', function ($query) {
+                $query->select('item_id')
+                    ->from('likes')
+                    ->where('user_id', auth()->id());
+            });
         }
-        return view('index',compact('items'));
+
+        if($search){
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $items = $query->get();
+
+        return view('index',compact('items','tab', 'search'));
     }
     
     public function detail(Item $item){
@@ -90,14 +83,5 @@ class ItemController extends Controller
         }
         
         return redirect()->route('item.detail',['item' => $item->id]);
-    }
-    
-    //mylist表示前の検索クエリを取得
-    private function getPreviousQuery() : ?string
-    {
-        $previousUrl = url()->previous();
-        $previousQueryParams = [];
-        parse_str(parse_url($previousUrl, PHP_URL_QUERY), $previousQueryParams);
-        return isset($previousQueryParams['search_item']) ? $previousQueryParams['search_item'] : null;
     }
 }

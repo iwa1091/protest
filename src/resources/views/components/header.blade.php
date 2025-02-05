@@ -3,9 +3,9 @@
         <a href="/"><img src="{{ asset('img/logo.png') }}" alt="ロゴ"></a>
     </div>
     @if( !in_array(Route::currentRouteName(), ['register', 'login', 'verification.notice']) )
-    <form class="header_search" action="/item" method="get">
+    <form class="header_search" action="/" method="get">
         @csrf
-        <input id="inputElement" class="header_search--input" type="text" name="search_item" placeholder="なにをお探しですか？">
+        <input id="inputElement" class="header_search--input" type="text" name="search" placeholder="なにをお探しですか？">
         <button id="buttonElement" class="header_search--button">
             <img src="{{ asset('img/search_icon.jpeg') }}" alt="検索アイコン" style="height:100%;">
         </button>
@@ -31,15 +31,3 @@
     </nav>
     @endif
 </header>
-<script>
-    // const inputElement = document.getElementById('inputElement');
-    // const buttonElement = document.getElementById('buttonElement');
-
-    // inputElement.addEventListener("change", function() {
-    //     if (!this.value == '') {
-    //         buttonElement.style.display = "unset";
-    //     } else {
-    //         buttonElement.style.display = "none";
-    //     }
-    // })
-</script>

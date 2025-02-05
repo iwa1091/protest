@@ -14,8 +14,10 @@
 @include('components.header')
 <div class="border">
     <ul class="border__list">
-        <li><a href="/">おすすめ</a></li>
-        <li><a href="/?page=mylist">マイリスト</a></li>
+        <li><a href="{{ route('items.list', ['tab'=>'recommend', 'search'=>$search]) }}">おすすめ</a></li>
+        @if(!auth()->guest())
+        <li><a href="{{ route('items.list', ['tab'=>'mylist', 'search'=>$search]) }}">マイリスト</a></li>
+        @endif
     </ul>
 </div>
 <div class="container">
