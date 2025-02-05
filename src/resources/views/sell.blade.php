@@ -13,13 +13,13 @@
     <h1 class="page__title">商品の出品</h1>
     <p class="entry__name">商品画像</p>
     <div class="sell__img">
+        <img class="appload__img" id="myImage">
+    </div>
+    <div class="select_image--btn">
         <label class="btn2">
             画像を選択する
             <input id="target" name="img_url" class="btn2--input" type="file" name="test" accept="image/png, image/jpeg">
         </label>
-    </div>
-    <div id="appload" class="appload">
-        <img class="appload__img" id="myImage">
     </div>
     <div class="form__error">
         @error('img_url')
