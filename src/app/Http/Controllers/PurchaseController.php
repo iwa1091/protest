@@ -40,7 +40,7 @@ class PurchaseController extends Controller
         ];
 
         $checkout_session = $stripe->checkout->sessions->create([
-            'payment_method_types' => ['card', 'konbini'],
+            'payment_method_types' => [$request->payment_method],
             'payment_method_options' => [
                 'konbini' => [
                     'expires_after_days' => 7,
@@ -85,7 +85,7 @@ class PurchaseController extends Controller
             'sending_building' => $request->sending_building ?? null,
         ]);
 
-        return redirect('/')->with('status', '決済が完了しました！');
+        return redirect('/')->with('flashSuccess', '決済が完了しました！');
     }
 
     public function address($item_id, Request $request){

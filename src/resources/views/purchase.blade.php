@@ -29,16 +29,15 @@
                     <div class="purchase__flex">
                         <h3 class="purchase__title">支払い方法</h3>
                     </div>
-                    <select class="purchase__value" id="payment">
-                        <option value="1">コンビニ払い</option>
-                        <option value="2">銀行振り込み</option>
-                        <option value="3">クレジットカード払い</option>
+                    <select class="purchase__value" id="payment" name="payment_method">
+                        <option value="konbini">コンビニ払い</option>
+                        <option value="card">クレジットカード払い</option>
                     </select>
                 </div>
                 <div class="purchase">
                     <div class="purchase__flex">
                         <h3 class="purchase__title">配送先</h3>
-                        <button type="button" id="purchase__update">変更する</button>
+                        <button type="button" id="destination__update">変更する</button>
                     </div>
                     <div class="purchase__value">
                         <label>〒 <input class="input_destination" name="destination_postcode" value="{{ $user->profile->postcode }}" readonly></label><br>
