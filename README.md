@@ -32,12 +32,12 @@ STRIPE_SECRET_KEY="シークレットキー"
 https://docs.stripe.com/payments/checkout?locale=ja-JP
 
 ## テストアカウント
-name: 管理者  
-email: admin@gmail.com  
+name: 一般ユーザ  
+email: general1@gmail.com  
 password: password  
 -------------------------
 name: 一般ユーザ  
-email: general@gmail.com  
+email: general2@gmail.com  
 password: password  
 -------------------------
 
