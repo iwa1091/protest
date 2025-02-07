@@ -38,14 +38,14 @@
         @endforeach
     </div>
     <div class="form__error">
-        @error('category_id')
+        @error('categories')
             {{ $message }}
         @enderror
     </div>
 
     <label for="status" class="entry__name">商品の状態</label>
     <select name="condition_id" id="status" class="sell__select input">
-        <option hidden>選択してください</option>
+        <option value="null" hidden>選択してください</option>
         @foreach ($conditions as $condition)
         <option value="{{$condition->id}}">{{$condition->condition}}</option>
         @endforeach

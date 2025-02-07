@@ -30,7 +30,7 @@ class ItemRequest extends FormRequest
             'description' => 'required',
             'img_url' => 'required',
             'categories' => 'required',
-            'condition_id' => 'required'
+            'condition_id' => ['required', 'prohibited_if:condition_id,null'],
         ];
     }
 
@@ -44,6 +44,7 @@ class ItemRequest extends FormRequest
             'img_url.required' => '商品画像を選択してください',
             'categories.required' => 'カテゴリーを選択してください',
             'condition_id.required' => '商品状態を選択してください',
+            'condition_id.prohibited_if' => '商品状態を選択してください',
         ];
     }
 }

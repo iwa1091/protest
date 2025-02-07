@@ -41,7 +41,7 @@ class CreateNewUser implements CreatesNewUsers
             'password.required' => 'パスワードを入力してください',
             'password.string' => 'パスワードは文字列で入力してください',
             'password.min' => 'パスワードは8文字以上で入力してください',
-            'password.confirmed' => 'パスワードの確認が一致しません'
+            'password.confirmed' => 'パスワードと一致しません'
         ];
         Validator::make($input, $rules, $messages)->validate();
 
