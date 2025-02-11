@@ -30,7 +30,7 @@ class UserTest extends TestCase
             'password_confirmation' => "password",
         ]);
 
-        $response->assertRedirect('/mypage/profile');
+        $response->assertRedirect('/email/verify');
         $this->assertDatabaseHas( User::class, [
             'name' => "テストユーザ",
             'email' => "test@gmail.com",
