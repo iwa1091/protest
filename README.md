@@ -31,7 +31,7 @@ STRIPE_SECRET_KEY="シークレットキー"
 以下のリンクは公式ドキュメントです。<br>
 https://docs.stripe.com/payments/checkout?locale=ja-JP
 
-## テーブル設計
+## ER図
 ![alt](ER.png)
 
 ## テストアカウント
