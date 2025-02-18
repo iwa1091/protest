@@ -109,7 +109,7 @@ class ItemTest extends TestCase
             'comment' => 'テストコメント'
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(302);
         $this->assertDatabaseHas('comments',[
             'user_id' => 1,
             'item_id' => 1,
