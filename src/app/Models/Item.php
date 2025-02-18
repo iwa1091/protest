@@ -46,13 +46,6 @@ class Item extends Model
 
     public function categories()
     {
-        // $categories_items = CategoryItem::where('item_id', $this->id)->get();
-        // $categories = [];
-        // foreach ($categories_items as $category_item){
-        //     $category = Category::find($category_item->category_id);
-        //     array_push($categories, $category);
-        // }
-
         $categories = $this->categoryItem->map(function ($item) {
             return $item->category;
         });
