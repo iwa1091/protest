@@ -20,7 +20,7 @@
             <img src="{{ \Storage::url($item->img_url) }}" alt="商品画像">
         </div>
         @endif
-        <div class="item__info">
+        <div class="item__info" id="scroll__item__info">
             <h2 class="item__name">{{$item->name}}</h2>
             <p class="item__price">¥ {{number_format($item->price)}}</p>
             <div class="item__form">
@@ -91,5 +91,5 @@
     </div>
 </div>
 
-<script src="{{ asset('/js/json.js') }}"></script>
+<script src="{{ asset('/js/scroll.js') }}"></script>
 @endsection
