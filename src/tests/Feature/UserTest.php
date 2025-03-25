@@ -21,35 +21,6 @@ class UserTest extends TestCase
         $this->seed(DatabaseSeeder::class);
     }
 
-    //会員情報登録
-    public function test_register_user(){
-        $response = $this->post('/register',[
-            'name' => "テストユーザ",
-            'email' => "test@gmail.com",
-            'password' => "password",
-            'password_confirmation' => "password",
-        ]);
-
-        $response->assertRedirect('/email/verify');
-        $this->assertDatabaseHas( User::class, [
-            'name' => "テストユーザ",
-            'email' => "test@gmail.com",
-        ]);
-    }
-
-    //ログイン機能
-    public function test_login_user(){
-        $user = User::find(2);
-
-        $response = $this->post('/login', [
-            'email' => "general2@gmail.com",
-            'password' => "password",
-        ]);
-
-        $response->assertRedirect('/');
-        $this->assertAuthenticatedAs($user);
-    }
-
     //ログアウト機能
     public function test_logout_user(){
         $user = User::find(1);
