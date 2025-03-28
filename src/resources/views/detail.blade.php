@@ -46,6 +46,10 @@
             <h3 class="item__section">商品の情報</h3>
             <table class="item__table">
                 <tr>
+                    <th>ブランド</th>
+                    <td>{{ ($item->brand !== null && $item->brand !== '') ? $item->brand : '未入力' }}</td>
+                </tr>
+                <tr>
                     <th>カテゴリー</th>
                     <td>
                         <ul class="item__table-category">

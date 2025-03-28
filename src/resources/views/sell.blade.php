@@ -55,6 +55,8 @@
             {{ $message }}
         @enderror
     </div>
+    <label class="entry__name">ブランド</label>
+    <input name="brand" class="input">
 
     <h2 class="heading__name">商品名と説明</h2>
     <label for="name" class="entry__name">商品名</label>
