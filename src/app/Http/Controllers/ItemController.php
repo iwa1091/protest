@@ -69,6 +69,7 @@ class ItemController extends Controller
         $item = Item::create([
             'name' => $request->name,
             'price' => $request->price,
+            'brand' => $request->brand,
             'description' => $request->description,
             'img_url' => $img_url,
             'condition_id' => $request->condition_id,
