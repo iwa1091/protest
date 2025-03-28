@@ -63,6 +63,7 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 | condition_id | bigint |  |  | ◯ | condtions(id) |
 | name | varchar(255) |  |  | ◯ |  |
 | price | int |  |  | ◯ |  |
+| brand | varchar(255) |  |  |  |  |
 | description | varchar(255) |  |  | ◯ |  |
 | img_url | varchar(255) |  |  | ◯ |  |
 | created_at | timestamp |  |  |  |  |
