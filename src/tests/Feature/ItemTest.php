@@ -35,6 +35,7 @@ class ItemTest extends TestCase
         $expected_data = [
             'name' => '腕時計',
             'price' => 15000,
+            'brand' => 'Rolax',
             'description' => 'スタイリッシュなデザインのメンズ腕時計',
             'img_url' => 'public/img/mens_clock.jpg',
             'user_id' => 2,
@@ -46,6 +47,7 @@ class ItemTest extends TestCase
         function ($items) use ($expected_data) {
             return $items[0]->name === $expected_data['name']
                 && $items[0]->price === $expected_data['price']
+                && $items[0]->brand === $expected_data['brand']
                 && $items[0]->description === $expected_data['description']
                 && $items[0]->img_url === $expected_data['img_url']
                 && $items[0]->user_id === $expected_data['user_id']
@@ -59,6 +61,7 @@ class ItemTest extends TestCase
         $expected_data = [
             'name' => 'ノートPC',
             'price' => 45000,
+            'brand' => '',
             'description' => '高性能なノートパソコン',
             'img_url' => 'public/img/laptop_PC.jpg',
             'user_id' => 2,
@@ -69,6 +72,7 @@ class ItemTest extends TestCase
         $response->assertViewHas('items', function($items) use ($expected_data) {
             return $items[0]->name === $expected_data['name'] 
                 && $items[0]->price === $expected_data['price']
+                && $items[0]->brand === $expected_data['brand']
                 && $items[0]->description === $expected_data['description']
                 && $items[0]->img_url === $expected_data['img_url']
                 && $items[0]->user_id === $expected_data['user_id']

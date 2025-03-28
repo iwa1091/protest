@@ -71,11 +71,12 @@ class UserTest extends TestCase
 
         $response = $this->actingAs($user)->post('/sell',[
             'img_url' => $image,
+            'name' => "テストアイテム",
+            'price' => 5000,
+            'brand' => '',
+            'description' => "テストテストテストテスト",
             'categories' => [2,3,4],
             'condition_id' => 4,
-            'name' => "テストアイテム",
-            'description' => "テストテストテストテスト",
-            'price' => 5000,
         ]);
 
         $response->assertStatus(302);
