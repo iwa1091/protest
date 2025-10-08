@@ -14,53 +14,94 @@ class CategoryItemsTableSeeder extends Seeder
      */
     public function run()
     {
-        $sneaker_categories = [1,5,9];
-        foreach($sneaker_categories as $sneaker_category){
+        // -------------------------
+        // CO01: 腕時計 (ID=1)
+        // カテゴリ: ファッション(1), メンズ(5), アクセサリー(12)
+        // -------------------------
+        $item1_categories = [1, 5, 12];
+        foreach($item1_categories as $category_id){
             CategoryItem::create([
                 'item_id' => 1,
-                'category_id' => $sneaker_category,
+                'category_id' => $category_id,
             ]);
         }
 
-        $hat_categories = [1,4];
-        foreach($hat_categories as $hat_category){
-            CategoryItem::create([
-                'item_id' => 2,
-                'category_id' => $hat_category,
-            ]);
-        }
+        // -------------------------
+        // CO02: HDD (ID=2)
+        // カテゴリ: 家電(2)
+        // -------------------------
+        CategoryItem::create(['item_id' => 2, 'category_id' => 2]);
+        
+        // -------------------------
+        // CO03: 玉ねぎ3束 (ID=3)
+        // カテゴリ: 食品（※今回は食品カテゴリがないため、キッチン(10)に紐づけ）
+        // -------------------------
+        CategoryItem::create(['item_id' => 3, 'category_id' => 10]);
 
-        $glasses_categories = [1,12];
-        foreach ($glasses_categories as $glasses_category) {
-            CategoryItem::create([
-                'item_id' => 3,
-                'category_id' => $glasses_category,
-            ]);
-        }
-
-        $tv_categories = [2,3];
-        foreach ($tv_categories as $tv_category) {
+        // -------------------------
+        // CO04: 革靴 (ID=4)
+        // カテゴリ: ファッション(1), メンズ(5)
+        // -------------------------
+        $item4_categories = [1, 5];
+        foreach ($item4_categories as $category_id) {
             CategoryItem::create([
                 'item_id' => 4,
-                'category_id' => $tv_category,
+                'category_id' => $category_id,
             ]);
         }
 
+        // -------------------------
+        // CO05: ノートPC (ID=5)
+        // カテゴリ: 家電(2)
+        // -------------------------
+        CategoryItem::create(['item_id' => 5, 'category_id' => 2]);
+        
+        // -------------------------
+        // CO06: マイク (ID=6)
+        // カテゴリ: 家電(2)
+        // -------------------------
+        CategoryItem::create(['item_id' => 6, 'category_id' => 2]);
 
-        $wallet_categories = [1,5,12];
-        foreach ($wallet_categories as $wallet_category) {
+        // -------------------------
+        // CO07: ショルダーバッグ (ID=7)
+        // カテゴリ: ファッション(1), レディース(4)
+        // -------------------------
+        $item7_categories = [1, 4];
+        foreach ($item7_categories as $category_id) {
             CategoryItem::create([
-                'item_id' => 5,
-                'category_id' => $wallet_category,
+                'item_id' => 7,
+                'category_id' => $category_id,
             ]);
         }
 
-        $earrings_categories = [1,4,12];
-        foreach ($earrings_categories as $earrings_category) {
+        // -------------------------
+        // CO08: タンブラー (ID=8)
+        // カテゴリ: キッチン(10), インテリア(3)
+        // -------------------------
+        $item8_categories = [3, 10];
+        foreach ($item8_categories as $category_id) {
             CategoryItem::create([
-                'item_id' => 6,
-                'category_id' => $earrings_category,
+                'item_id' => 8,
+                'category_id' => $category_id,
             ]);
         }
+        
+        // -------------------------
+        // CO09: コーヒーミル (ID=9)
+        // カテゴリ: キッチン(10), 家電(2)
+        // -------------------------
+        $item9_categories = [2, 10];
+        foreach ($item9_categories as $category_id) {
+            CategoryItem::create([
+                'item_id' => 9,
+                'category_id' => $category_id,
+            ]);
+        }
+        
+        // -------------------------
+        // CO10: メイクセット (ID=10)
+        // カテゴリ: コスメ(6)
+        // -------------------------
+        CategoryItem::create(['item_id' => 10, 'category_id' => 6]);
     }
 }

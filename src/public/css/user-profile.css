@@ -1,0 +1,238 @@
+/* -------------------------------------------------------------------
+ * ユーザープロフィールページ (user-profile.css)
+ * Figmaのデザインを参考に、レスポンシブなレイアウトを実装します。
+ * ------------------------------------------------------------------- */
+
+/* --- 全体コンテナ --- */
+.profile-container {
+    max-width: 90%;
+    /* Figmaのメインコンテンツ幅に近い値 */
+    width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* --- ヘッダー要素 --- */
+.profile-header {
+    margin-bottom: 30px;
+    padding-bottom: 5px;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    /* Figmaに基づき、少し太めのフォント */
+}
+
+/* --- プロフィール情報と評価エリア --- */
+.profile-info-area {
+    display: flex;
+    align-items: center;
+    /* 縦方向中央揃え */
+    gap: 40px;
+    margin-bottom: 50px;
+    padding: 20px 0;
+}
+
+.profile-img-box {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    /* 控えめな影 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- 評価表示エリア (FN005) --- */
+.rating-box {
+    padding-left: 20px;
+    border-left: 1px solid #ddd;
+}
+
+.rating-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: normal;
+}
+
+.rating-score {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.star {
+    margin-right: 2px;
+    color: #ccc;
+    /* 空の星の色 */
+}
+
+.star.filled {
+    color: #ffc107;
+    /* 塗られた星の色 (Figmaの配色を参考に) */
+}
+
+/* 半星はCSSのみでは難しいため、full starsとempty starsの表現に留めています */
+.star.half {
+    color: #ffc107;
+    /* 便宜上、半星も塗り星と同じ色に設定 */
+}
+
+.score-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin-left: 10px;
+}
+
+.no-rating {
+    color: #777;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+
+/* --- 出品アイテム一覧 --- */
+.item-list-container {
+    margin-top: 40px;
+}
+
+.list-title {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.item-list {
+    /* アイテム一覧はグリッド表示 */
+    display: grid;
+    /* 最小幅180pxで、可能な限りカラムを自動で配置 */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.item-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-radius: 6px;
+    overflow: hidden;
+    /* Figmaのようなシャドウ */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.item-image-box {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    /* 1:1のアスペクト比を維持 */
+    background-color: #f0f0f0;
+}
+
+.item-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-like-count {
+    position: absolute;
+    top: 5px;
+    /* 右上に配置 */
+    right: 5px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.item-like-count i {
+    color: #ff4500;
+    /* いいねアイコンの色を赤系統に */
+}
+
+.item-price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 10px;
+    background-color: white;
+    text-align: left;
+    color: #333;
+}
+
+.no-items {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777;
+    padding: 50px 0;
+    font-size: 1rem;
+}
+
+/* --- レスポンシブ対応 (モバイル) --- */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 0 15px;
+        width: 100%;
+    }
+
+    .profile-info-area {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .profile-img-box {
+        width: 100px;
+        height: 100px;
+    }
+
+    .rating-box {
+        padding-left: 0;
+        border-left: none;
+        padding-bottom: 20px;
+    }
+
+    .rating-score {
+        justify-content: center;
+    }
+
+    .item-list {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 15px;
+    }
+
+    .list-title {
+        text-align: center;
+    }
+}

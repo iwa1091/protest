@@ -1,0 +1,870 @@
+/*
+ * 取引チャット画面 (chat.blade.php) 用のスタイル
+ */
+
+/* --------------------
+ * 1. メインレイアウト
+ * -------------------- */
+.chat-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    min-height: 80vh;
+}
+
+/* --------------------
+ * 2. 左側サイドバー (取引中の商品一覧)
+ * -------------------- */
+.sidebar {
+    width: 300px;
+    background-color: #f7f7f7;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 0 20px 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.sidebar-header h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.chat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* リストエリアを拡張 */
+    overflow-y: auto; /* スクロール可能にする */
+}
+
+.chat-list-item {
+    border-bottom: 1px solid #eee;
+}
+
+.chat-list-item a {
+    display: flex;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+    position: relative;
+}
+
+.chat-list-item a:hover {
+    background-color: #e6e6e6;
+}
+
+.chat-list-item.active a {
+    background-color: #eee;
+    font-weight: bold;
+}
+
+.item-img-box {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-info {
+    flex-grow: 1;
+    position: relative;
+}
+
+.item-name {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* FN005: 新規通知確認機能のスタイル */
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: 0px;
+    background-color: #ff4500; /* 目立つ赤 */
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 12px;
+    z-index: 10;
+    min-width: 20px;
+    text-align: center;
+}
+
+.no-chats {
+    padding: 20px;
+    color: #777;
+    text-align: center;
+    font-size: 14px;
+}
+
+.back-to-mypage {
+    display: block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    text-align: center;
+    background-color: #3b82f6;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.back-to-mypage:hover {
+    background-color: #2563eb;
+}
+
+/* --------------------
+ * 3. 右側メインチャットエリア
+ * -------------------- */
+.main-chat-area {
+    width: calc(100% - 300px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 上部バー（商品・相手情報） */
+.item-detail-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fcfcfc;
+    flex-shrink: 0;
+}
+
+.partner-info {
+    display: flex;
+    align-items: center;
+}
+
+.partner-info .role {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.partner-info .seller {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.partner-info .buyer {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.partner-name-link {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.item-info-header {
+    display: flex;
+    align-items: center;
+}
+
+.item-header-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.item-text-details {
+    text-align: right;
+}
+
+.item-name-header {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    color: #555;
+}
+
+.item-price {
+    font-size: 14px;
+    color: #ff4500;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* メッセージ履歴エリア */
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.no-chats-yet {
+    text-align: center;
+    color: #999;
+    padding: 50px 0;
+}
+
+/* 添付画像スタイル */
+.message-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 8px;
+    margin-bottom: 5px;
+    display: block;
+    cursor: zoom-in;
+}
+
+/* メッセージ吹き出しの共通スタイル */
+.message-bubble {
+    max-width: 60%;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message-text {
+    margin-bottom: 5px;
+    white-space: pre-wrap; /* 改行を反映 */
+}
+
+.chat-image {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.message-time {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    margin-top: 5px;
+}
+
+/* 送信者（自分）のメッセージ */
+.message-bubble.sender {
+    align-self: flex-end; /* 右寄せ */
+    background-color: #3b82f6; /* 青 */
+    color: white;
+    border-bottom-right-radius: 4px; /* 右下を少し角張らせる */
+}
+
+.message-bubble.sender .message-time {
+    color: rgba(255, 255, 255, 0.8);
+    text-align: right;
+}
+
+/* 受信者（相手）のメッセージ */
+.message-bubble.receiver {
+    align-self: flex-start; /* 左寄せ */
+    background-color: #f0f0f0; /* 薄いグレー */
+    color: #333;
+    border-bottom-left-radius: 4px; /* 左下を少し角張らせる */
+}
+
+.message-bubble.receiver .receiver-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.message-bubble.receiver .receiver-name {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.message-bubble.receiver .message-time {
+    text-align: right;
+}
+
+/* フォームエリア */
+.chat-input-area {
+    padding: 20px 30px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    flex-shrink: 0;
+}
+
+.chat-validation-errors {
+    background-color: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.chat-validation-errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.image-upload-label {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.image-upload-label:hover {
+    background-color: #5a6268;
+}
+
+.send-button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.send-button:hover {
+    background-color: #2563eb;
+}
+
+.complete-trade-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff4500;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+.complete-trade-button:hover {
+    background-color: #e04000;
+}
+
+/* バリデーションエラーメッセージ */
+.error-message {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+
+/* -------------------------------------------
+カスタムスタイル（チャット共通）
+------------------------------------------- */
+.chat-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 85vh;
+}
+
+/* -------------------------------------------
+サイドバー (左側)
+------------------------------------------- */
+.sidebar {
+    width: 300px;
+    border-right: 1px solid #eee;
+    background-color: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sidebar-header h3 {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.chat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+
+
+.chat-list-item.active {
+    background-color: #fff;
+    border-left: 4px solid #ff4500;
+}
+
+.item-img-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.unread-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4500;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.back-to-mypage {
+    display: block;
+    text-align: center;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 0.9rem;
+}
+
+/* -------------------------------------------
+メインチャットエリア (右側)
+------------------------------------------- */
+.main-chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.item-detail-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.partner-info .role {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin-right: 8px;
+}
+
+.partner-info .seller {
+    background-color: #4CAF50;
+}
+
+.partner-info .buyer {
+    background-color: #2196F3;
+}
+
+.partner-name-link {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.item-info-header {
+    display: flex;
+    align-items: center;
+}
+
+.item-header-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.item-text-details {
+    line-height: 1.4;
+}
+
+.item-name-header {
+    font-size: 0.9rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.item-price {
+    font-size: 1.1rem;
+    color: #ff4500;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* -------------------------------------------
+チャット履歴
+------------------------------------------- */
+.chat-history {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #fcfcfc;
+}
+
+
+
+.sender {
+    /* 自分のメッセージ (右寄せ) */
+    margin-left: auto;
+    background-color: #ffe0b2;
+    /* 淡いオレンジ */
+}
+
+
+.message-text {
+    margin: 0;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+
+
+.message-time {
+    display: block;
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 5px;
+    text-align: right;
+    /* 送信者・受信者ともに右端に時間を表示 */
+}
+
+/* -------------------------------------------
+チャット入力エリア
+------------------------------------------- */
+.chat-input-area {
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    background-color: #f7f7f7;
+}
+
+.chat-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    resize: none;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+
+
+.form-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    /* エラーメッセージを考慮して上に余白を追加 */
+}
+
+.image-upload-label {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.image-upload-label:hover {
+    background-color: #5a6268;
+}
+
+.send-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.send-button:hover {
+    background-color: #0056b3;
+}
+
+/* -------------------------------------------
+取引完了ボタン
+------------------------------------------- */
+
+
+.trade-pending-text,
+.trade-completed-text {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #777;
+    font-weight: bold;
+}
+
+/* -------------------------------------------
+評価モーダル（FN012, FN013）
+------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ff4500;
+    padding-bottom: 10px;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #555;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.complete-confirm-btn {
+    background-color: #ff4500;
+    color: white;
+}
+
+.complete-confirm-btn:hover {
+    background-color: #e04000;
+}
+
+/* ★スターレーティング（JS不使用） - モーダル内 */
+.rating-area {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.rating-area input {
+    display: none;
+    /* ラジオボタンを非表示に */
+}
+
+.rating-area label {
+    font-size: 2.8rem;
+    /* 星の大きさ /
+color: #ccc; / デフォルトの星の色 (灰色) */
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0 5px;
+}
+
+/* ★ホバー時と選択時に星を黄色にする */
+.rating-area label:hover,
+.rating-area label:hover~label,
+.rating-area input:checked~label {
+    color: #ffd700;
+}
+
+/* コメントと送信ボタン */
+.review-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 80px;
+    margin-top: 10px;
+}
+
+.review-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #3490dc;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.review-submit-btn:hover {
+    background-color: #2779bd;
+}
+/* --------------------
+ * 4. レスポンシブ対応 (モバイル向け)
+ * -------------------- */
+@media (max-width: 768px) {
+    .chat-wrapper {
+        flex-direction: column;
+        margin: 0;
+        min-height: 100vh;
+        box-shadow: none;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px 0;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .main-chat-area {
+        width: 100%;
+    }
+
+    .item-detail-bar {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-info-header {
+        margin-top: 10px;
+    }
+
+    .partner-name-link {
+        font-size: 14px;
+    }
+
+    .item-text-details {
+        text-align: left;
+    }
+
+    .chat-history {
+        padding: 15px;
+    }
+
+    .message-bubble {
+        max-width: 85%;
+        padding: 8px 12px;
+    }
+
+    .chat-input-area {
+        padding: 15px;
+    }
+
+    .form-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .image-upload-label,
+    .send-button {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+}
