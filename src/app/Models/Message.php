@@ -16,15 +16,15 @@ class Message extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'item_id',       // どの商品（Item）に関するメッセージか (Itemに直接紐付け)
-        'user_id',       // 送信者
-        'message',       // メッセージ本文 (FN006)
-        'image_url',     // 添付画像URL (FN006)
-        'is_read',       // 既読フラグ (未読メッセージ数カウントに使用)
+        'sold_item_id',  // 取引(SoldItem)に紐づくメッセージ
+        'user_id',       // 送信者ユーザー
+        'message',       // メッセージ本文
+        'image_url',     // 添付画像パス
+        'is_read',       // 既読フラグ
     ];
 
     /**
-     * このメッセージを送信したユーザーを取得
+     * このメッセージを送信したユーザー
      */
     public function user(): BelongsTo
     {
@@ -32,10 +32,19 @@ class Message extends Model
     }
 
     /**
-     * このメッセージが属する商品（Item）を取得
+     * このメッセージが属する取引（SoldItem）
+     */
+    public function soldItem(): BelongsTo
+    {
+        return $this->belongsTo(SoldItem::class);
+    }
+
+    /**
+     * このメッセージが属する商品（Item）
+     * SoldItem経由で取得可能にしておく（利便性向上）
      */
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Item::class, 'sold_item_id', 'id');
     }
 }

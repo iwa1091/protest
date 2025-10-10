@@ -2,162 +2,181 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\AddressRequest;
 use App\Models\Item;
-use App\Models\User;
 use App\Models\SoldItem;
 use App\Models\Profile;
+use App\Models\Rating; // ⭐ 追加
 use Stripe\StripeClient;
 
 class PurchaseController extends Controller
 {
     /**
-     * 購入画面を表示する
+     * 購入画面表示
      */
-    public function index($item_id, Request $request){
-        $item = Item::find($item_id);
-        $user = User::find(Auth::id());
-        return view('purchase',compact('item','user'));
+    public function index($item_id)
+    {
+        $item = Item::findOrFail($item_id);
+        $user = Auth::user();
+        return view('purchase', compact('item', 'user'));
     }
 
     /**
-     * 決済処理を実行する
+     * Checkout セッション作成
      */
-    public function purchase($item_id, Request $request){
-        $item = Item::find($item_id);
-        $stripe = new StripeClient(config('stripe.stripe_secret_key'));
+    public function purchase($item_id, Request $request)
+    {
+        $item = Item::findOrFail($item_id);
+        $stripe = new StripeClient(env('STRIPE_SECRET_KEY'));
 
-        // item->price を使用し、クエリパラメータを組み立てる
-        [
-            $user_id,
-            $amount,
-            $sending_postcode,
-            $sending_address,
-            $sending_building
-        ] = [
-            Auth::id(),
-            $item->price, // Itemモデルから取得した price を使用
-            $request->destination_postcode,
-            // 住所と建物名はURLエンコード
-            urlencode($request->destination_address),
-            urlencode($request->destination_building),
-        ];
-
-        // success_urlを生成
-        $success_url = "http://localhost/purchase/{$item_id}/success?user_id={$user_id}&amount={$amount}&sending_postcode={$sending_postcode}&sending_address={$sending_address}";
-
-        // 建物名がある場合のみ追加
-        if ($sending_building) {
-            $success_url .= "&sending_building={$sending_building}";
-        }
-         Log::info('Stripe Success URL to be used: ' . $success_url);
         $checkout_session = $stripe->checkout->sessions->create([
             'payment_method_types' => [$request->payment_method],
             'payment_method_options' => [
-                'konbini' => [
-                    'expires_after_days' => 7,
-                ],
+                'konbini' => ['expires_after_days' => 7],
             ],
-            'line_items' => [
-                [
-                    'price_data' => [
-                        'currency' => 'jpy',
-                        'product_data' => ['name' => $item->name],
-                        'unit_amount' => $item->price,
-                    ],
-                    'quantity' => 1,
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'jpy',
+                    'product_data' => ['name' => $item->name],
+                    'unit_amount' => $item->price,
                 ],
-            ],
+                'quantity' => 1,
+            ]],
             'mode' => 'payment',
-            // 決済成功時のリダイレクトURL
-            'success_url' => $success_url,
+            'success_url' => route('purchase.success', ['item_id' => $item_id]) . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('purchase.index', ['item_id' => $item_id]),
+            'metadata' => [
+                'user_id' => Auth::id(),
+                'item_id' => $item_id,
+                'sending_postcode' => $request->destination_postcode ?? '',
+                'sending_address' => $request->destination_address ?? '',
+                'sending_building' => $request->destination_building ?? '',
+            ],
         ]);
 
         return redirect($checkout_session->url);
     }
 
     /**
-     * 決済成功後の処理（SoldItemの作成と商品削除）
+     * 決済成功ページ (Webhook不要版)
      */
-    public function success($item_id, Request $request){
-        // ★★★ デバッグログを追加：受け取ったクエリパラメータを全て記録 ★★★
-        Log::debug('Success Query Parameters:', $request->query());
-
-        // 必須クエリパラメータの検閲
-        if(!$request->user_id || !$request->amount || !$request->sending_postcode || !$request->sending_address){
-            // 必須パラメータが不足している場合は例外をスロー
-            // Log::error('Missing required query parameters after Stripe redirect.'); // ログは上のdebugでカバー
-            // throw new Exception("You need all Query Parameters (user_id, amount, sending_postcode, sending_address)");
-            // エラーを出さずにホームへ戻す（Stripeの挙動によってはパラメータが消えることがあるため）
-            return redirect('/')->with('flashError', '購入情報の一部が確認できませんでした。再度お試しください。');
+    public function success(Request $request, $item_id)
+    {
+        $sessionId = $request->query('session_id');
+        if (!$sessionId) {
+            return redirect()->route('user.mypage')->with('flashError', 'セッション情報が見つかりません。');
         }
 
-        $item = Item::find($item_id);
+        $stripe = new StripeClient(env('STRIPE_SECRET_KEY'));
+        $session = $stripe->checkout->sessions->retrieve($sessionId, []);
 
-        if (!$item) {
-            // 商品が見つからない場合は、既に購入済みとみなしリダイレクト
-            return redirect('/')->with('flashSuccess', 'この商品は既に取引が完了しています。');
-        }
-        
-        try {
-            // 1. SoldItemの作成を実行
-            SoldItem::create([
-                'buyer_id' => $request->user_id, 
-                'item_id' => $item_id,
-                'price' => (int)$request->amount, // クエリパラメータの amount を使用し、念のため (int) でキャスト
-                // URLエンコードされている住所情報をデコードして保存
-                'sending_postcode' => $request->sending_postcode,
-                'sending_address' => urldecode($request->sending_address),
-                'sending_building' => $request->sending_building ? urldecode($request->sending_building) : null,
-            ]);
-            
-            // 2. 元の items テーブルから商品を削除して、再購入を防止
-            $item->delete(); 
+        // SoldItem 登録（新規取引開始）
+        $this->markAsSold($session);
 
-            Log::info("SoldItem created successfully for item_id: {$item_id}");
-
-            return redirect('/')->with('flashSuccess', '決済が完了しました！取引チャットで出品者と連絡を取りましょう。');
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            // データベースエラーを捕捉
-            Log::error('Database Query Error during SoldItem creation: ' . $e->getMessage(), [
-                'item_id' => $item_id,
-                'query_data' => $request->query(),
-            ]);
-            // 開発環境であれば、詳細なDBエラーを例外としてスロー
-            throw new Exception("Database Constraint Error during SoldItem creation: " . $e->getMessage());
-
-        } catch (Exception $e) {
-             // その他の予期せぬエラー
-            Log::error('Unexpected error during purchase success: ' . $e->getMessage(), ['item_id' => $item_id]);
-            throw $e;
-        }
+        return redirect()->route('user.mypage', ['page' => 'in-progress'])
+            ->with('flashSuccess', '決済が完了しました！取引チャットで出品者と連絡を取りましょう。');
     }
 
     /**
-     * 住所編集画面を表示する
+     * SoldItem 登録（Checkout Session 共通）
      */
-    public function address($item_id, Request $request){
-        $user = User::find(Auth::id());
-        return view('address', compact('user','item_id'));
+    protected function markAsSold($session)
+    {
+        $metadata = $session->metadata ?? null;
+        $userId = $metadata->user_id ?? null;
+        $itemId = $metadata->item_id ?? null;
+
+        if (!$userId || !$itemId) {
+            Log::warning("Missing metadata for SoldItem creation", ['session' => (array)$session]);
+            return;
+        }
+
+        $item = Item::find($itemId);
+        if (!$item || $item->is_sold) {
+            Log::info("Item not found or already sold", ['item_id' => $itemId]);
+            return;
+        }
+
+        // ✅ 取引中（未完了）状態で登録する
+        SoldItem::create([
+            'buyer_id' => $userId,
+            'item_id' => $item->id,
+            'price' => $session->amount_total ?? $session->amount ?? $item->price,
+            'sending_postcode' => $metadata->sending_postcode ?? 'unknown',
+            'sending_address' => $metadata->sending_address ?? 'unknown',
+            'sending_building' => $metadata->sending_building ?? null,
+            'is_completed' => false, // ← 重要：取引中ステータスで登録
+            'buyer_last_read_at' => now(),
+            'seller_last_read_at' => now(),
+        ]);
+
+        // 商品を「売却済み」に更新
+        $item->update(['is_sold' => true]);
+
+        Log::info("SoldItem created successfully", ['item_id' => $item->id, 'buyer_id' => $userId]);
     }
 
     /**
-     * 住所情報を更新する
+     * ✅ 取引完了（＋評価保存）処理
      */
-    public function updateAddress(AddressRequest $request){
+    public function complete(Request $request, $item_id)
+    {
+        $soldItem = SoldItem::where('item_id', $item_id)->firstOrFail();
 
-        $user = User::find(Auth::id());
+        // 取引を完了状態に更新
+        $soldItem->update(['is_completed' => true]);
+
+        // 評価があれば保存
+        if ($request->filled('rating')) {
+            Rating::create([
+                'sold_item_id' => $soldItem->id,
+                'reviewer_id' => Auth::id(),
+                'rated_user_id' => $soldItem->seller_id === Auth::id()
+                    ? $soldItem->buyer_id
+                    : $soldItem->seller_id,
+                'rating' => $request->rating,
+                'comment' => null,
+            ]);
+        }
+
+        return redirect()->route('chat.show', $item_id)
+            ->with('flashSuccess', '取引を完了し、評価を送信しました。');
+    }
+
+    /**
+     * 住所編集画面
+     */
+    public function address($item_id)
+    {
+        $user = Auth::user();
+        return view('address', compact('user', 'item_id'));
+    }
+
+    /**
+     * 住所更新
+     */
+    public function updateAddress(AddressRequest $request)
+    {
+        $user = Auth::user();
         Profile::where('user_id', $user->id)->update([
             'postcode' => $request->postcode,
             'address' => $request->address,
-            'building' => $request->building
+            'building' => $request->building,
         ]);
 
         return redirect()->route('purchase.index', ['item_id' => $request->item_id]);
     }
+
+    /**
+     * Stripe Webhook (未使用)
+     */
+    /*
+    public function webhook(Request $request)
+    {
+        // Webhook対応版の処理を記述（必要に応じて）
+    }
+    */
 }

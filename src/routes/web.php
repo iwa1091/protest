@@ -16,52 +16,88 @@ use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
+| アプリケーションのメインルート設定
+|--------------------------------------------------------------------------
 */
 
-Route::get('/',[ItemController::class, 'index'])->name('items.list');
-Route::get('/item/{item}',[ItemController::class, 'detail'])->name('item.detail');
+// --- Stripe Webhook（認証不要） ---
+Route::post('/stripe/webhook', [PurchaseController::class, 'webhook']);
+
+// --- 公開ルート（非ログインユーザー向け） ---
+Route::get('/', [ItemController::class, 'index'])->name('items.list');
+Route::get('/item/{item}', [ItemController::class, 'detail'])->name('item.detail');
 Route::get('/item', [ItemController::class, 'search']);
 
-// 任意のユーザーのプロフィール閲覧ルート
+// 任意ユーザーのプロフィール閲覧
 Route::get('/user/{user_id}', [UserController::class, 'showProfile'])->name('user.profile.show');
 
+// Stripe Checkout 成功後のリダイレクト
 Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success'])->name('purchase.success');
 
-Route::middleware(['auth','verified'])->group(function () {
-    Route::get('/sell',[ItemController::class, 'sellView']);
-    Route::post('/sell',[ItemController::class, 'sellCreate']);
-    Route::post('/item/like/{item_id}',[LikeController::class, 'create']);
-    Route::post('/item/unlike/{item_id}',[LikeController::class, 'destroy']);
-    Route::post('/item/comment/{item_id}',[CommentController::class, 'create']);
-    
-    // 購入処理ルート
-    Route::get('/purchase/{item_id}',[PurchaseController::class, 'index'])->middleware('purchase')->name('purchase.index');
-    Route::post('/purchase/{item_id}',[PurchaseController::class, 'purchase'])->middleware('purchase');
-    //Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success']);
-    Route::get('/purchase/address/{item_id}',[PurchaseController::class, 'address']);
-    Route::post('/purchase/address/{item_id}',[PurchaseController::class, 'updateAddress']);
+// --- 認証済みユーザー専用ルート ---
+Route::middleware(['auth', 'verified'])->group(function () {
 
-    // マイページ・プロフィールルート
+    /* ----------------------------
+     * 出品関連
+     * ---------------------------- */
+    Route::get('/sell', [ItemController::class, 'sellView'])->name('item.sell.view');
+    Route::post('/sell', [ItemController::class, 'sellCreate'])->name('item.sell.create');
+
+    /* ----------------------------
+     * いいね・コメント
+     * ---------------------------- */
+    Route::post('/item/like/{item_id}', [LikeController::class, 'create'])->name('item.like');
+    Route::post('/item/unlike/{item_id}', [LikeController::class, 'destroy'])->name('item.unlike');
+    Route::post('/item/comment/{item_id}', [CommentController::class, 'create'])->name('item.comment');
+
+    /* ----------------------------
+     * 購入・配送
+     * ---------------------------- */
+    Route::get('/purchase/{item_id}', [PurchaseController::class, 'index'])
+        ->middleware('purchase')
+        ->name('purchase.index');
+
+    Route::post('/purchase/{item_id}', [PurchaseController::class, 'purchase'])
+        ->middleware('purchase')
+        ->name('purchase.store');
+
+    // 配送先住所変更
+    Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'address'])->name('purchase.address');
+    Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('purchase.address.update');
+
+    /* ----------------------------
+     * マイページ・プロフィール
+     * ---------------------------- */
     Route::get('/mypage', [UserController::class, 'mypage'])->name('user.mypage');
-    Route::get('/mypage/profile', [UserController::class, 'profile'])->name('user.profile'); 
-    Route::post('/mypage/profile', [UserController::class, 'updateProfile']);
+    Route::get('/mypage/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::post('/mypage/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 
-    // 【修正】取引チャット関連ルートのパラメータ名を {item_id} に統一 (暗黙的なモデルバインディングを避ける)
-    Route::get('/chat/{item_id}', [ChatController::class, 'show'])->name('chat.show'); // ★ 修正
-    Route::post('/chat/{item_id}', [ChatController::class, 'store'])->name('chat.store'); // ★ 修正
+    /* ----------------------------
+     * 取引チャット
+     * ---------------------------- */
+    Route::prefix('chat')->group(function () {
+        Route::get('/{item_id}', [ChatController::class, 'show'])->name('chat.show');
+        Route::post('/{item_id}', [ChatController::class, 'store'])->name('chat.store');
+        Route::put('/{message_id}', [ChatController::class, 'update'])->name('chat.update');   // ✅ 追加：メッセージ編集
+        Route::delete('/{message_id}', [ChatController::class, 'destroy'])->name('chat.delete'); // ✅ 追加：メッセージ削除
+    });
 
-    // 【修正】取引完了・評価関連ルートのパラメータ名を {item_id} に統一
-    Route::post('/trade/complete/{item_id}', [ChatController::class, 'completeTrade'])->name('trade.complete'); // ★ 修正
-    Route::get('/trade/review/{item_id}', [ChatController::class, 'reviewView'])->name('trade.review.show'); // ★ 修正
-    Route::post('/trade/review/{item_id}', [ChatController::class, 'submitReview'])->name('trade.review.store'); // ★ 修正
+    /* ----------------------------
+     * 取引完了・評価
+     * ---------------------------- */
+    Route::post('/trade/complete/{item_id}', [ChatController::class, 'completeTrade'])
+        ->name('trade.complete'); // 購入者：取引完了操作 → モーダル表示（is_completed変更なし）
+
+    Route::post('/trade/review/{item_id}', [ChatController::class, 'submitReview'])
+        ->name('trade.review.submit'); // 双方評価後 → is_completed = true に更新
 });
 
-Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware('email');
+// --- 認証関連 (Fortify) ---
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('email');
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->name('verification.notice');
+// --- メール認証 ---
+Route::get('/email/verify', fn() => view('auth.verify-email'))->name('verification.notice');
 
 Route::post('/email/verification-notification', function (Request $request) {
     session()->get('unauthenticated_user')->sendEmailVerificationNotification();

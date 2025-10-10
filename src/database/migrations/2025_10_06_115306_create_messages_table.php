@@ -11,23 +11,48 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            // ★修正: 商品ID(item_id)ではなく、取引ID(sold_item_id)に紐付け (チャットは取引後に行われるため)
-            $table->foreignId('sold_item_id')->constrained('sold_items')->cascadeOnDelete();
-            // 誰が投稿したか (user_id)
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); 
-            
-            // メッセージ本文 (FN007: 最大400文字の要件に合わせてTEXT型。stringより長い文字を許容)
-            $table->text('message')->nullable(); // メッセージ本文は画像のみの場合もあるためnullableに変更
-            // 添付画像 (FN006: 画像がオプションのためNULL許容)
-            $table->string('image_url')->nullable(); 
-            
-            // 新規追加: 既読管理フラグ (FN001/FN005)
+
+            /**
+             * 取引（sold_items）に紐づく外部キー
+             * チャットは「取引成立後」に紐づくため item_id ではなく sold_item_id を使用
+             */
+            $table->foreignId('sold_item_id')
+                ->constrained('sold_items')
+                ->cascadeOnDelete();
+
+            /**
+             * メッセージ送信者（ユーザー）
+             */
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            /**
+             * メッセージ本文（400文字程度）
+             * 添付画像のみの投稿も許容するため nullable
+             */
+            $table->text('message')->nullable();
+
+            /**
+             * 添付画像パス
+             * Storage::url() で参照するため string + nullable
+             */
+            $table->string('image_url')->nullable();
+
+            /**
+             * 既読フラグ
+             * false = 未読 / true = 既読
+             */
             $table->boolean('is_read')->default(false);
-            
+
+            /**
+             * タイムスタンプ
+             * created_at / updated_at 自動生成
+             */
             $table->timestamps();
         });
     }
@@ -37,7 +62,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('messages');
     }

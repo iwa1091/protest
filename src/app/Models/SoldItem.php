@@ -11,26 +11,26 @@ class SoldItem extends Model
 {
     use HasFactory;
 
-    // ★修正: idカラムが追加されたため、主キーのカスタム設定と増分無効設定を削除
-    // protected $primaryKey = 'item_id';
-    // public $incrementing = false;
-
     protected $fillable = [
-        'buyer_id', // ★修正: user_idからbuyer_idに変更 (購入者ID)
-        'item_id', // 元の商品ID
-        'sending_postcode',
-        'sending_address',
-        'sending_building',
-        'price', // ★追加: priceカラムをfillableに追加
-        // 既読管理用のカラム（buyer_last_read_at, seller_last_read_at）はmessagesテーブルに移動したため削除
+        'buyer_id',           // 購入者ID
+        'item_id',            // 元の商品ID
+        'sending_postcode',   // 郵便番号
+        'sending_address',    // 住所
+        'sending_building',   // 建物名
+        'price',              // 購入金額
+        'is_completed',       // 取引完了フラグ (チャット機能実装のコンテキストで重要)
+    ];
+    
+    // is_completed のデフォルト値を false に設定しておくと便利かもしれません
+    protected $attributes = [
+        'is_completed' => false,
     ];
 
     /**
-     * この取引（SoldItem）の購入者を取得
+     * この取引の購入者情報を取得
      */
-    public function user(): BelongsTo
+    public function buyer(): BelongsTo
     {
-        // ★修正: 外部キーをbuyer_idに明示的に設定
         return $this->belongsTo(User::class, 'buyer_id');
     }
 
@@ -41,22 +41,21 @@ class SoldItem extends Model
     {
         return $this->belongsTo(Item::class);
     }
-    
+
     /**
-     * この取引に関連するチャットメッセージを取得
+     * この取引に関連するチャットメッセージを取得 (SoldItemに直接紐づく)
      */
     public function messages(): HasMany
     {
-        // messagesテーブルがまだ作成されていませんが、先んじてリレーションを定義
+        // Messageモデルは sold_item_id を外部キーとして持っているため、hasManyで定義
         return $this->hasMany(Message::class);
     }
 
     /**
-     * この取引に関連する評価を取得
+     * この取引に関連する評価情報を取得
      */
     public function ratings(): HasMany
     {
-        // ratingsテーブルがまだ作成されていませんが、先んじてリレーションを定義
         return $this->hasMany(Rating::class);
     }
 }

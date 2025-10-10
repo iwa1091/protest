@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
 use App\Models\Category;
@@ -13,76 +13,104 @@ use App\Models\CategoryItem;
 
 class ItemController extends Controller
 {
-    public function index(Request $request){
+    /**
+     * トップページ（商品一覧）
+     */
+    public function index(Request $request)
+    {
         $tab = $request->query('tab', 'recommend');
         $search = $request->query('search');
         $query = Item::query();
+
+        // 自分の商品は除外
         $query->where('user_id', '<>', Auth::id());
 
-        if ($tab === 'mylist'){
-            $query->whereIn('id', function ($query) {
-                $query->select('item_id')
-                    ->from('likes')
-                    ->where('user_id', auth()->id());
+        // マイリスト表示
+        if ($tab === 'mylist') {
+            $query->whereIn('id', function ($q) {
+                $q->select('item_id')
+                  ->from('likes')
+                  ->where('user_id', auth()->id());
             });
         }
 
-        if($search){
+        // 検索キーワード
+        if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }
 
         $items = $query->get();
 
-        return view('index',compact('items','tab', 'search'));
+        return view('index', compact('items', 'tab', 'search'));
     }
-    
-    public function detail(Item $item){
+
+    /**
+     * 商品詳細
+     */
+    public function detail(Item $item)
+    {
         return view('detail', compact('item'));
     }
-    
-    public function search(Request $request){
+
+    /**
+     * 検索機能
+     */
+    public function search(Request $request)
+    {
         $search_word = $request->search_item;
         $query = Item::query();
         $query = Item::scopeItem($query, $search_word);
-        
         $items = $query->get();
+
         return view('index', compact('items'));
     }
-    
-    public function sellView(){
+
+    /**
+     * 出品フォーム表示
+     */
+    public function sellView()
+    {
         $categories = Category::all();
         $conditions = Condition::all();
-        return view('sell',compact('categories', 'conditions'));
+
+        return view('sell', compact('categories', 'conditions'));
     }
-    
-    public function sellCreate(ItemRequest $request){
-        
+
+    /**
+     * 出品登録処理
+     */
+    public function sellCreate(ItemRequest $request)
+    {
         $img = $request->file('img_url');
-        
+
         try {
-            //code...
-            $img_url = Storage::disk('local')->put('public/img', $img);
+            // ✅ publicディスクを使用して保存（Storage::url対応）
+            // 保存先: storage/app/public/img/
+            // 戻り値例: "img/abc123.jpg"
+            $path = $img->store('img', 'public');
         } catch (\Throwable $th) {
             throw $th;
         }
-        
+
+        // DB登録
         $item = Item::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'brand' => $request->brand,
-            'description' => $request->description,
-            'img_url' => $img_url,
+            'name'         => $request->name,
+            'price'        => $request->price,
+            'brand'        => $request->brand,
+            'description'  => $request->description,
+            'img_url'      => $path, // ✅ "img/xxxxx.jpg" の形で保存
             'condition_id' => $request->condition_id,
-            'user_id' => Auth::id(),
+            'user_id'      => Auth::id(),
         ]);
-        
-        foreach ($request->categories as $category_id){
+
+        // カテゴリ中間テーブル登録
+        foreach ($request->categories as $category_id) {
             CategoryItem::create([
-                'item_id' => $item->id,
-                'category_id' => $category_id
+                'item_id'    => $item->id,
+                'category_id'=> $category_id
             ]);
         }
-        
-        return redirect()->route('item.detail',['item' => $item->id]);
+
+        return redirect()->route('item.detail', ['item' => $item->id]);
     }
 }

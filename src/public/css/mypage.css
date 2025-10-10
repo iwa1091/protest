@@ -192,3 +192,58 @@
     padding: 30px;
     color: #888;
 }
+
+/* =====================================================
+   未読メッセージバッジ（共通）
+===================================================== */
+
+/* タブ右側の通知バッジ */
+.unread-badge-tab {
+    background-color: #FF0000;
+    color: #FFFFFF;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    border-radius: 10px;
+    padding: 4px 10px;
+    margin-left: 8px;
+    display: inline-block;
+}
+
+/* 商品画像左上の通知バッジ */
+.item__img--container {
+    position: relative;
+}
+
+.unread-badge-item {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background-color: #FF0000;
+    color: #FFFFFF;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 100%;
+    width: 27px;
+    height: 26px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* タブリストレイアウト調整 */
+.tab-in-progress {
+    position: relative;
+}
+
+.unread-badge-tab {
+    position: absolute;
+    top: -5px;
+    right: -35px;
+}
