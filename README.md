@@ -11,7 +11,7 @@ make init
 ※Makefileは実行するコマンドを省略することができる便利な設定ファイルです。コマンドの入力を効率的に行えるようになります。<br>
 
 ## メール認証
-mailtrapというツールを使用しています。<br>
+maihogというツールを使用しています。<br>
 以下のリンクから会員登録をしてください。　<br>
 https://mailtrap.io/
 
@@ -126,14 +126,27 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 ![alt](ER.png)
 
 ## テストアカウント
-name: 一般ユーザ  
-email: general1@gmail.com  
-password: password  
--------------------------
-name: 一般ユーザ  
-email: general2@gmail.com  
-password: password  
--------------------------
+以下は Seeder に基づくテストユーザーのログイン情報です。  
+ログイン後、それぞれのユーザーで出品状況を確認できます。
+---
+**ユーザーA（出品者）**  
+- name: ユーザーA（出品者）  
+- email: seller_a@example.com  
+- password: password  
+　（CO01～CO05の商品データを出品）
+---
+**ユーザーB（出品者）**  
+- name: ユーザーB（出品者）  
+- email: seller_b@example.com  
+- password: password  
+    （CO01～CO05の商品データを出品）
+---
+**ユーザーC（未紐づけユーザー）**  
+- name: ユーザーC（未紐づけ）  
+- email: user_c@example.com  
+- password: password  
+    （取引・出品に紐づいていないテストユーザーです）
+---
 
 ## PHPUnitを利用したテストに関して
 以下のコマンド:  
@@ -150,6 +163,3 @@ php artisan migrate:fresh --env=testing
 ```
 ※.env.testingにもStripeのAPIキーを設定してください。  
 
-## 生徒様へ
-普段よりお世話になっております。  
-こちらの模範解答に関するご質問、またこちらに不備を見つけた、などの際は気兼ねなく申し付けください。
