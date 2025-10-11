@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     nginx:
         image: nginx:1.21.1
@@ -42,6 +40,14 @@ services:
             - mysql
         ports:
             - 8080:80
+
+    # ✅ Mailhog 追加
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+            - "1025:1025"   # SMTPポート
+            - "8025:8025"   # WebUIポート
+        restart: always
 
 volumes:
     db-data:

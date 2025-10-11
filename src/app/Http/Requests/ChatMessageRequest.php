@@ -55,7 +55,7 @@ class ChatMessageRequest extends FormRequest
         $validator->after(function ($validator) {
             // messageとimageの両方が空の場合はエラーとする
             if (empty($this->message) && empty($this->image)) {
-                $validator->errors()->add('message', '本文または画像をアップロードしてください。');
+                $validator->errors()->add('message', '本文を入力してください');
             }
         });
     }

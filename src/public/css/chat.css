@@ -496,6 +496,28 @@
 }
 
 /* =====================================================
+   バリデーションメッセージ
+===================================================== */
+.chat-error-box {
+    background-color: #ffe9e9;
+    border: 1px solid #ffb3b3;
+    color: #c0392b;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+
+.chat-error-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.chat-error-box li {
+    font-size: 0.9rem;
+    list-style: disc;
+}
+
+/* =====================================================
    アニメーション
 ===================================================== */
 @keyframes fadeIn {

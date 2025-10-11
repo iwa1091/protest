@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Item;
 use App\Models\SoldItem;
 use App\Models\Rating;
+use App\Models\Message;
 use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,7 +61,7 @@ class UserController extends Controller
     }
 
     /**
-     * マイページ表示
+     * マイページ表示（未読件数＋平均評価＋タブ切替対応）
      */
     public function mypage(Request $request)
     {
@@ -69,8 +70,23 @@ class UserController extends Controller
 
         $items = collect();
         $inProgressItems = collect();
-        $totalUnread = 0;
 
+        /**
+         * ✅ 全体の未読メッセージ件数を常に取得
+         */
+        $totalUnread = Message::whereHas('soldItem', function ($q) use ($user) {
+                $q->where(function ($sub) use ($user) {
+                    $sub->where('buyer_id', $user->id)
+                        ->orWhereHas('item', fn($i) => $i->where('user_id', $user->id));
+                });
+            })
+            ->where('user_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->count();
+
+        /**
+         * ✅ タブ別アイテム取得
+         */
         if ($page === 'sell') {
             // 出品した商品
             $items = Item::where('user_id', $user->id)
@@ -78,7 +94,7 @@ class UserController extends Controller
                 ->get();
 
         } elseif ($page === 'buy') {
-            // 購入した商品（完了済のみ）
+            // 購入した商品（完了済）
             $items = Item::whereHas('soldItem', function (Builder $q) use ($user) {
                     $q->where('buyer_id', $user->id)
                       ->where('is_completed', true);
@@ -87,35 +103,30 @@ class UserController extends Controller
                 ->get();
 
         } elseif ($page === 'in-progress') {
-            /**
-             * ✅ 取引中の商品を「最新メッセージ順」で取得
-             */
+            // ✅ 取引中（最新メッセージ順）
             $inProgressItems = SoldItem::with(['item'])
-                ->withMax('messages', 'created_at') // 最新メッセージ日時を取得
+                ->withMax('messages', 'created_at')
                 ->where('is_completed', false)
                 ->where(function (Builder $q) use ($user) {
                     $q->where('buyer_id', $user->id)
                       ->orWhereHas('item', fn($iq) => $iq->where('user_id', $user->id));
                 })
-                ->orderByDesc('messages_max_created_at') // 最新メッセージ順にソート
+                ->orderByDesc('messages_max_created_at')
                 ->get()
                 ->map(function ($soldItem) use ($user) {
-                    // 各商品の未読数カウント
+                    // 各取引の未読数を算出
                     $soldItem->unread_count = $soldItem->messages()
                         ->where('user_id', '!=', $user->id)
                         ->where('is_read', false)
                         ->count();
 
-                    // itemが存在しない場合に備えて補完
+                    // itemが欠けている場合の補正
                     if (!$soldItem->relationLoaded('item') || !$soldItem->item) {
                         $soldItem->setRelation('item', null);
                     }
 
                     return $soldItem;
                 });
-
-            // 🔹 全体の未読メッセージ数を合計
-            $totalUnread = $inProgressItems->sum('unread_count');
         }
 
         /**
@@ -127,7 +138,7 @@ class UserController extends Controller
             : null;
 
         /**
-         * ✅ ビューへデータ渡し
+         * ✅ ビューに全データ送信
          */
         return view('mypage', [
             'user'            => $user,

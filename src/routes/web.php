@@ -20,8 +20,8 @@ use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 |--------------------------------------------------------------------------
 */
 
-// --- Stripe Webhook（認証不要） ---
-Route::post('/stripe/webhook', [PurchaseController::class, 'webhook']);
+// --- Stripe Webhook（現在未使用・必要に応じて有効化） ---
+// Route::post('/stripe/webhook', [PurchaseController::class, 'webhook']);
 
 // --- 公開ルート（非ログインユーザー向け） ---
 Route::get('/', [ItemController::class, 'index'])->name('items.list');
@@ -31,8 +31,9 @@ Route::get('/item', [ItemController::class, 'search']);
 // 任意ユーザーのプロフィール閲覧
 Route::get('/user/{user_id}', [UserController::class, 'showProfile'])->name('user.profile.show');
 
-// Stripe Checkout 成功後のリダイレクト
-Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success'])->name('purchase.success');
+// --- Stripe Checkout 成功後（決済完了＆出品者へメール通知） ---
+Route::get('/purchase/{item_id}/success', [PurchaseController::class, 'success'])
+    ->name('purchase.success');
 
 // --- 認証済みユーザー専用ルート ---
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -73,23 +74,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/mypage/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 
     /* ----------------------------
-     * 取引チャット
+     * 取引チャット・評価
      * ---------------------------- */
     Route::prefix('chat')->group(function () {
         Route::get('/{item_id}', [ChatController::class, 'show'])->name('chat.show');
         Route::post('/{item_id}', [ChatController::class, 'store'])->name('chat.store');
-        Route::put('/{message_id}', [ChatController::class, 'update'])->name('chat.update');   // ✅ 追加：メッセージ編集
-        Route::delete('/{message_id}', [ChatController::class, 'destroy'])->name('chat.delete'); // ✅ 追加：メッセージ削除
+        Route::put('/{message_id}', [ChatController::class, 'update'])->name('chat.update');
+        Route::delete('/{message_id}', [ChatController::class, 'destroy'])->name('chat.delete');
     });
 
-    /* ----------------------------
-     * 取引完了・評価
-     * ---------------------------- */
+    // ✅ 「取引完了」はメール送信ではなくレビュー開始用として残す
     Route::post('/trade/complete/{item_id}', [ChatController::class, 'completeTrade'])
-        ->name('trade.complete'); // 購入者：取引完了操作 → モーダル表示（is_completed変更なし）
+        ->name('trade.complete');
 
+    // 双方評価後 → is_completed = true に更新
     Route::post('/trade/review/{item_id}', [ChatController::class, 'submitReview'])
-        ->name('trade.review.submit'); // 双方評価後 → is_completed = true に更新
+        ->name('trade.review.submit');
 });
 
 // --- 認証関連 (Fortify) ---

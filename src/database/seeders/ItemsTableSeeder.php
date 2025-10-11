@@ -18,7 +18,7 @@ class ItemsTableSeeder extends Seeder
                 'brand'=> 'Rolax',
                 'description' => 'スタイリッシュなデザインのメンズ腕時計',
                 'img_url' => 'img/mens_clock.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$UNUSED,
             ],
             [
@@ -27,7 +27,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => '西芝',
                 'description' => '高速で信頼性の高いハードディスク',
                 'img_url' => 'img/hard_disk.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$HARMLESS,
             ],
             [
@@ -36,7 +36,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => '地場産',
                 'description' => '新鮮な玉ねぎ3束のセット',
                 'img_url' => 'img/onion.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$HARMED,
             ],
             [
@@ -45,7 +45,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Classic',
                 'description' => 'クラシックなデザインの革靴',
                 'img_url' => 'img/leather_shoes.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$BAD_CONDITION,
             ],
             [
@@ -54,7 +54,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Lenovo',
                 'description' => '高性能なノートパソコン',
                 'img_url' => 'img/laptop_PC.jpg',
-                'user_id' => 2,
+                'user_id' => 1,
                 'condition_id' => Condition::$UNUSED,
             ],
             [
@@ -72,7 +72,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Casual',
                 'description' => 'おしゃれなショルダーバッグ',
                 'img_url' => 'img/shoulder_bag.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$HARMED,
             ],
             [
@@ -81,7 +81,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Mizumi',
                 'description' => '使いやすいタンブラー',
                 'img_url' => 'img/tumbler.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$BAD_CONDITION,
             ],
             [
@@ -90,7 +90,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Starbucks',
                 'description' => '手動のコーヒーミル',
                 'img_url' => 'img/coffee_mill.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$UNUSED,
             ],
             [
@@ -99,7 +99,7 @@ class ItemsTableSeeder extends Seeder
                 'brand' => 'Beauty',
                 'description' => '便利なメイクアップセット',
                 'img_url' => 'img/make_set.jpg',
-                'user_id' => 1,
+                'user_id' => 2,
                 'condition_id' => Condition::$HARMLESS,
             ],
         ];

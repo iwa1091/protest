@@ -87,7 +87,7 @@
                         <div class="message-body">
                             <p class="message-text">{{ $chat->message }}</p>
                             @if ($chat->image_url)
-                                <img src="{{ Storage::url($chat->image_url) }}" alt="添付画像" class="message-image">
+                                <img src="{{ asset($chat->image_url) }}" alt="添付画像" class="message-image">
                             @endif
                         </div>
 
@@ -145,9 +145,21 @@
 
         {{-- 入力欄 --}}
         <div class="chat-input-area">
+            {{-- 🔸 バリデーションエラー出力 --}}
+            @if ($errors->any())
+                <div class="chat-error-box">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li class="error-text">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
             <form action="{{ route('chat.store', $item->id) }}" method="POST" enctype="multipart/form-data" class="chat-form">
                 @csrf
-                <textarea name="message" class="message-input" placeholder="メッセージを入力してください" rows="3">{{ old('message') }}</textarea>
+                <textarea name="message" class="message-input" id="chatMessage"
+                    placeholder="メッセージを入力してください" rows="3">{{ old('message') }}</textarea>
                 <div class="form-controls">
                     <label for="image_upload" class="image-upload-label">
                         <i class="fas fa-camera"></i> 画像を追加
@@ -176,7 +188,7 @@
             @endif
         </div>
 
-        {{-- ✅ 評価モーダル（自動表示機能あり） --}}
+        {{-- ✅ 評価モーダル --}}
         <div id="complete-modal"
              class="modal-overlay"
              style="@if($showBuyerModal || $shouldShowReviewModal) display:flex; @else display:none; @endif">
@@ -207,5 +219,31 @@
         </div>
     @endif
 </div>
+
+{{-- ✅ 本文保持（localStorage対応） --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('chatMessage');
+    const form = document.querySelector('.chat-form');
+    const itemId = "{{ $item->id }}";
+    const storageKey = `chat_draft_message_${itemId}`;
+
+    // ページ読み込み時に保存内容を復元
+    const savedMessage = localStorage.getItem(storageKey);
+    if (savedMessage && !textarea.value) {
+        textarea.value = savedMessage;
+    }
+
+    // 入力中にリアルタイムで保存
+    textarea.addEventListener('input', () => {
+        localStorage.setItem(storageKey, textarea.value);
+    });
+
+    // フォーム送信時に削除
+    form.addEventListener('submit', () => {
+        localStorage.removeItem(storageKey);
+    });
+});
+</script>
 
 @endsection
