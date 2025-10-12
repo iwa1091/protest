@@ -737,77 +737,115 @@
    幅別レイアウト調整
 ------------------------------ */
 
-/* PC 1400–1540px：横幅に合わせて見出しサイズ最適化 */
+/* =====================================================
+   レスポンシブ最適化：PC (1400–1540px) & Tablet (768–850px)
+   ===================================================== */
+
+/* ---------- PC（1400–1540px） ---------- */
 @media (min-width:1400px) and (max-width:1540px) {
-    .item-text-details .item-name-header {
-        font-size: 38px;
-    }
 
-    .item-text-details .item-price-header {
-        font-size: 26px;
-    }
-
-    .item-header-img {
-        width: 150px;
-        height: 150px;
-    }
-}
-
-/* Tablet 768–850px：2カラム維持しつつ詰める */
-@media (min-width:768px) and (max-width:850px) {
-    .chat-wrapper {
-        margin: 24px auto;
-    }
-
+    /* 左右レイアウトバランス */
     .sidebar {
-        width: 260px;
-        padding: 18px 14px;
+        width: 280px;
+        padding: 16px;
     }
 
     .main-chat-area {
-        width: calc(100% - 260px);
+        width: calc(100% - 280px);
     }
 
+    /* 商品情報バーの調整 */
+    .item-detail-bar {
+        padding: 16px 20px;
+    }
+
+    .partner-info {
+        gap: 6px;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+
+    .partner-name-link {
+        font-size: 16px;
+    }
+
+    .complete-trade-button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    /* 商品名と価格を縮小 */
     .item-header-img {
         width: 140px;
         height: 140px;
     }
 
     .item-text-details .item-name-header {
-        font-size: 32px;
+        font-size: 34px;
     }
 
     .item-text-details .item-price-header {
         font-size: 24px;
     }
 
+    /* チャットエリア */
+    .chat-history {
+        padding: 20px;
+    }
+
     .message-bubble {
-        max-width: 72%;
+        max-width: 70%;
+        padding: 12px;
+    }
+
+    .message-text {
+        width: 400px;
+        height: auto;
     }
 }
 
-/* モバイル（<768px）：縦1カラム */
-@media (max-width:768px) {
+/* ---------- タブレット（768–850px） ---------- */
+@media (min-width:768px) and (max-width:850px) {
+
     .chat-wrapper {
-        flex-direction: column;
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-        min-height: 100vh;
+        flex-direction: row;
+        margin: 0 auto;
+        height: auto;
     }
 
     .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, .25);
+        width: 240px;
+        padding: 14px 12px;
     }
 
     .main-chat-area {
-        width: 100%;
+        width: calc(100% - 240px);
     }
 
-    .item-info-header {
-        align-items: flex-start;
+    .item-detail-bar {
+        padding: 14px 18px;
+    }
+
+    .partner-info {
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: flex-start;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+    }
+
+    .partner-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .partner-name-link {
+        font-size: 15px;
+    }
+
+    .complete-trade-button {
+        font-size: 13px;
+        padding: 8px 14px;
     }
 
     .item-header-img {
@@ -816,44 +854,45 @@
     }
 
     .item-text-details .item-name-header {
-        font-size: 28px;
+        font-size: 26px;
     }
 
     .item-text-details .item-price-header {
-        font-size: 22px;
+        font-size: 20px;
     }
 
     .chat-history {
-        padding: 18px 16px;
+        padding: 14px;
     }
 
     .message-bubble {
-        max-width: 86%;
-        padding: 12px;
+        max-width: 80%;
+        padding: 10px 12px;
     }
 
-    .user-icon {
-        width: 46px;
-        height: 46px;
-    }
-
-    .user-name {
-        font-size: 16px;
-    }
-
-    .form-controls {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .send-button {
+    .message-text {
         width: 100%;
-        height: 48px;
-        border-radius: 10px;
+        height: auto;
+    }
+
+    .chat-input-area {
+        padding: 12px 16px;
+    }
+
+    .message-input {
+        height: 40px;
+        font-size: 13px;
     }
 
     .image-upload-label {
-        width: 100%;
-        justify-content: center;
+        width: 120px;
+        height: 40px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    .send-button {
+        width: 70px;
+        height: 54px;
     }
 }
