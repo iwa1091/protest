@@ -196,7 +196,7 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
     （取引・出品に紐づいていないテストユーザーです）
 ---
 
-## PHPUnitを利用したテストに関して
+## 機能要件FN008バリデーションをPHPUnitで利用したテストに関して
 以下のコマンド:  
 ```
 //テスト用データベースの作成
@@ -206,8 +206,8 @@ mysql -u root -p
 create database test_database;
 
 docker-compose exec php bash
-php artisan migrate:fresh --env=testing
-./vendor/bin/phpunit
+php artisan test --filter=ChatMessageRequestTest
+./vendor/bin/phpunit --filter ChatMessageRequestTest
 ```
 ※.env.testingにもStripeのAPIキーを設定してください。  
 
