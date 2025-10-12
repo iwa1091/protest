@@ -13,13 +13,13 @@ class UsersTableSeeder extends Seeder
     {
         $users = [
             [
-                'name' => 'ユーザーA（出品者）',
+                'name' => 'ユーザーA',
                 'email' => 'seller_a@example.com',
                 'email_verified_at' => Carbon::now(),
                 'password' => Hash::make('password'),
             ],
             [
-                'name' => 'ユーザーB（出品者）',
+                'name' => 'ユーザーB',
                 'email' => 'seller_b@example.com',
                 'email_verified_at' => Carbon::now(),
                 'password' => Hash::make('password'),

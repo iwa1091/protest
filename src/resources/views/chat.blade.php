@@ -16,7 +16,7 @@
     {{-- 左側: 他の取引一覧 --}}
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3>取引中の商品</h3>
+            <h3>その他の取引</h3>
         </div>
         <ul class="chat-list">
             @forelse ($inProgressItems as $ipItem)
@@ -37,9 +37,6 @@
                 <li class="no-chats">取引中の商品はありません。</li>
             @endforelse
         </ul>
-        <a href="{{ route('user.mypage', ['page' => 'in-progress']) }}" class="back-to-mypage">
-            <i class="fas fa-arrow-left"></i> マイページへ戻る
-        </a>
     </div>
 
     {{-- 右側: チャット本体 --}}
@@ -49,15 +46,38 @@
         {{-- 商品情報 --}}
         <div class="item-detail-bar">
             <div class="partner-info">
-                @if ($isSeller)
-                    <span class="role seller">出品者</span>
-                @else
-                    <span class="role buyer">購入者</span>
-                @endif
+                <div class="partner-profile">
+                    @php
+                        // プロフィール画像パスの補正
+                        $partnerImgPath = $partner->profile?->img_url;
+
+                        if ($partnerImgPath) {
+                            // 「storage/」が含まれていなければ付け足す
+                            if (!Str::startsWith($partnerImgPath, 'storage/')) {
+                                $partnerImgPath = 'storage/' . $partnerImgPath;
+                            }
+                        }
+                    @endphp
+
+                    <img 
+                        src="{{ $partnerImgPath ? asset($partnerImgPath) : asset('img/icon.png') }}" 
+                        alt="{{ $partner?->name }} のプロフィール画像"
+                        class="partner-icon">
+                </div>
+
                 <a href="{{ route('user.profile.show', ['user_id' => $partner?->id]) }}" class="partner-name-link">
-                    {{ $partner?->name ?? '取引相手' }} さんとの取引
+                    {{ $partner?->name ?? '取引相手' }} さんとの取引画面
                 </a>
+
+                {{--  取引完了ボタンを右側に追加 --}}
+                @if (!$soldItem->is_completed && !$isSeller)
+                    <form action="{{ route('trade.complete', $item->id) }}" method="POST" class="complete-trade-inline">
+                        @csrf
+                        <button type="submit" class="complete-trade-button">取引を完了する</button>
+                    </form>
+                @endif
             </div>
+
 
             <div class="item-info-header">
                 <img src="{{ Storage::url($item->img_url) }}" alt="{{ $item->name }}" class="item-header-img">
@@ -76,14 +96,25 @@
                     <div class="message-bubble sender">
                         <div class="message-header">
                             <div class="user-info">
-                                <img class="user-icon"
-                                    src="{{ $chat->user->profile?->img_url ? Storage::url($chat->user->profile->img_url) : asset('img/icon.png') }}"
-                                    alt="プロフィール画像">
                                 <span class="user-name">{{ $chat->user->name }}</span>
-                            </div>
-                            <span class="message-time">{{ $chat->created_at->format('Y/m/d H:i') }}</span>
-                        </div>
+                                @php
+                                    // プロフィール画像パスの補正処理（partner と同様）
+                                    $chatUserImg = $chat->user->profile?->img_url;
 
+                                    if ($chatUserImg) {
+                                        // 「storage/」で始まらない場合は補完
+                                        if (!Str::startsWith($chatUserImg, 'storage/')) {
+                                            $chatUserImg = 'storage/' . $chatUserImg;
+                                        }
+                                    }
+                                @endphp
+
+                                <img 
+                                    class="user-icon"
+                                    src="{{ $chatUserImg ? asset($chatUserImg) : asset('img/icon.png') }}"
+                                    alt="{{ $chat->user->name }} のプロフィール画像">
+                            </div>
+                        </div>
                         <div class="message-body">
                             <p class="message-text">{{ $chat->message }}</p>
                             @if ($chat->image_url)
@@ -122,18 +153,29 @@
                     <div class="message-bubble receiver">
                         <div class="message-header">
                             <div class="user-info">
-                                <img class="user-icon"
-                                    src="{{ $chat->user->profile?->img_url ? Storage::url($chat->user->profile->img_url) : asset('img/icon.png') }}"
-                                    alt="プロフィール画像">
+                                @php
+                                    // プロフィール画像パスの補正処理（partner と同様）
+                                    $chatUserImg = $chat->user->profile?->img_url;
+
+                                    if ($chatUserImg) {
+                                        // 「storage/」で始まらない場合は補完
+                                        if (!Str::startsWith($chatUserImg, 'storage/')) {
+                                            $chatUserImg = 'storage/' . $chatUserImg;
+                                        }
+                                    }
+                                @endphp
+
+                                <img 
+                                    class="user-icon"
+                                    src="{{ $chatUserImg ? asset($chatUserImg) : asset('img/icon.png') }}"
+                                    alt="{{ $chat->user->name }} のプロフィール画像">
                                 <span class="user-name">{{ $chat->user->name }}</span>
                             </div>
-                            <span class="message-time">{{ $chat->created_at->format('Y/m/d H:i') }}</span>
                         </div>
-
                         <div class="message-body">
                             <p class="message-text">{{ $chat->message }}</p>
                             @if ($chat->image_url)
-                                <img src="{{ Storage::url($chat->image_url) }}" alt="添付画像" class="message-image">
+                                <img src="{{ asset($chat->image_url) }}" alt="添付画像" class="message-image">
                             @endif
                         </div>
                     </div>
@@ -158,43 +200,33 @@
             
             <form action="{{ route('chat.store', $item->id) }}" method="POST" enctype="multipart/form-data" class="chat-form">
                 @csrf
-                <textarea name="message" class="message-input" id="chatMessage"
-                    placeholder="メッセージを入力してください" rows="3">{{ old('message') }}</textarea>
-                <div class="form-controls">
-                    <label for="image_upload" class="image-upload-label">
-                        <i class="fas fa-camera"></i> 画像を追加
-                        <input type="file" name="image" id="image_upload" accept=".jpeg,.png" style="display:none;">
-                    </label>
-                    <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
+                <div class="input-row">
+                    <textarea
+                        name="message"
+                        class="message-input"
+                        id="chatMessage"
+                        placeholder="取引メッセージを記入してください"
+                        rows="3">{{ old('message') }}</textarea>
+
+                    <div class="form-controls">
+                        <label for="image_upload" class="image-upload-label">
+                            画像を追加
+                            <input type="file" name="image" id="image_upload" accept=".jpeg,.png" style="display:none;">
+                        </label>
+                        <button type="submit" class="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </form>
 
-            {{-- 取引完了・評価 --}}
-            @if (!$soldItem->is_completed)
-                @if (!$isSeller)
-                    <form action="{{ route('trade.complete', $item->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="complete-trade-button">取引を完了する</button>
-                    </form>
-                @else
-                    <p class="trade-pending-text">購入者の取引完了操作をお待ちください。</p>
-                @endif
-            @else
-                @if (!$isReviewed)
-                    <p class="trade-pending-text">評価がまだ完了していません。</p>
-                @else
-                    <p class="trade-completed-text">この取引は完了しています。</p>
-                @endif
-            @endif
-        </div>
-
-        {{-- ✅ 評価モーダル --}}
+        {{--  評価モーダル --}}
         <div id="complete-modal"
              class="modal-overlay"
              style="@if($showBuyerModal || $shouldShowReviewModal) display:flex; @else display:none; @endif">
             <div class="modal-content">
-                <h3>取引完了の確認と評価</h3>
-                <p>この取引を完了し、相手を星で評価してください。</p>
+                <h3>取引が完了しました。</h3>
+                <p>今回の取引相手はどうでしたか？</p>
                 <form action="{{ route('trade.review.submit', $item->id) }}" method="POST">
                     @csrf
                     <div class="rating-area">

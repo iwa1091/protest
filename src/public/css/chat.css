@@ -1,84 +1,100 @@
 /*
  * =====================================================
  * 取引チャット画面 (chat.blade.php)
- * デザイン参考：「取引チャット画面（出品者）.png」
- * JavaScript非依存：編集・削除・モーダルすべてCSS制御(:target)
+ * 画像デザイン準拠：出品者/購入者 + 各モーダル
+ * JS非依存（編集/削除/モーダルはCSS制御）
  * =====================================================
  */
 
-/* =====================================================
-   全体レイアウト
-===================================================== */
-.chat-wrapper {
-    display: flex;
-    max-width: 1200px;
-    margin: 40px auto;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    min-height: 80vh;
+/* ------------------------------
+   ベース
+------------------------------ */
+:root {
+    --sidebar-bg: #868686;
+    /* 左レール濃グレー */
+    --sidebar-pill: #D9D9D9;
+    /* レール内のボタン/項目色 */
+    --line: #5F5F5F;
+    --panel: #FFFFFF;
+    --page-bg: #fff;
+    /* チャット面の地色 */
+    --text: #222;
+    --muted: #5F5F5F;
+    --accent: #FF8282;
+    /* 取引を完了する */
+    --brand: #FF5555;
+    /* 送信/画像追加ボタンのピンク系 */
 }
 
-/* =====================================================
+/* ラッパー（左右2カラム） */
+.chat-wrapper {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 80px);
+    /* headerが80pxなら */
+    margin: 0;
+}
+
+/* ------------------------------
    サイドバー
-===================================================== */
+------------------------------ */
 .sidebar {
     width: 300px;
-    background-color: #f7f7f7;
-    border-right: 1px solid #e0e0e0;
-    padding: 20px 0;
+    background: var(--sidebar-bg);
+    color: #fff;
     display: flex;
     flex-direction: column;
+    padding: 20px 18px;
 }
 
 .sidebar-header {
-    padding: 0 20px 10px;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 15px;
+    padding: 6px 6px 16px;
+    margin-bottom: 16px;
 }
 
 .sidebar-header h3 {
     font-size: 18px;
-    font-weight: bold;
-    color: #333;
+    font-weight: 700;
 }
 
 .chat-list {
     list-style: none;
+    margin: 12px 0 0;
     padding: 0;
-    margin: 0;
-    flex-grow: 1;
     overflow-y: auto;
+    flex: 1;
 }
 
 .chat-list-item {
-    border-bottom: 1px solid #eee;
+    margin-bottom: 14px;
 }
 
 .chat-list-item a {
     display: flex;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
+    gap: 12px;
     align-items: center;
-    position: relative;
+    text-decoration: none;
+    color: #111;
+    background: var(--sidebar-pill);
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: filter .15s ease;
 }
 
 .chat-list-item a:hover {
-    background-color: #e6e6e6;
+    filter: brightness(0.95);
 }
 
 .chat-list-item.active a {
-    background-color: #eee;
-    font-weight: bold;
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .1);
 }
 
 .item-img-box {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    border-radius: 4px;
+    width: 52px;
+    height: 52px;
+    border-radius: 6px;
     overflow: hidden;
+    flex: 0 0 52px;
 }
 
 .item-img {
@@ -87,110 +103,182 @@
     object-fit: cover;
 }
 
+.item-info {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.item-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #000;
+}
+
 .unread-badge {
     position: absolute;
-    top: -5px;
-    right: 0;
-    background-color: #ff4500;
-    color: white;
+    right: -4px;
+    top: -8px;
+    background: #ff4500;
+    color: #fff;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: 700;
     padding: 2px 6px;
-    border-radius: 12px;
+    border-radius: 999px;
 }
 
 .no-chats {
-    padding: 20px;
-    color: #777;
+    color: #eee;
     text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
 }
 
-.back-to-mypage {
-    display: block;
-    margin-top: 15px;
-    padding: 10px 20px;
-    text-align: center;
-    background-color: #3b82f6;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
 
 .back-to-mypage:hover {
-    background-color: #2563eb;
+    filter: brightness(0.95);
 }
 
-/* =====================================================
-   メインチャットエリア
-===================================================== */
+/* ------------------------------
+   右側（チャットエリア）
+------------------------------ */
 .main-chat-area {
     width: calc(100% - 300px);
     display: flex;
     flex-direction: column;
-    background-color: #D9D9D9;
+    background: var(--page-bg);
 }
 
-/* 商品情報バー */
+/* 上部：商品/相手情報バー */
 .item-detail-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    border-bottom: 1px solid #ccc;
-    background-color: #fff;
+    background: #fff;
+    border-bottom: 2px solid var(--line);
+    padding: 18px 28px;
 }
 
 .partner-info {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin:0 0 10px 0;
+    flex-wrap: wrap;
+}
+/* partner-info 下に全幅ラインを表示 */
+.partner-info {
+    position: relative;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
 }
 
-.partner-info .role {
-    font-size: 12px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-right: 10px;
+.partner-info::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -28px;
+    width: calc(100% + 56px);
+    border-bottom: 2px solid var(--line);
 }
 
-.partner-info .seller {
-    background-color: #d1e7dd;
-    color: #0f5132;
+.partner-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.partner-info .buyer {
-    background-color: #f8d7da;
-    color: #842029;
+.partner-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #ddd;
+    border: 2px solid #eee;
 }
 
 .partner-name-link {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+    color: #111;
+    font-weight: 700;
     text-decoration: none;
+    font-size: 18px;
 }
 
-/* =====================================================
-   メッセージ一覧（吹き出し）
-===================================================== */
+.partner-name-link:hover {
+    text-decoration: underline;
+}
+
+/* 取引完了ボタン（右） */
+.complete-trade-inline {
+    margin-left: auto;
+}
+
+.complete-trade-button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform .15s ease, filter .15s ease;
+}
+
+.complete-trade-button:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.98);
+}
+
+/* 商品名+価格ブロック（左に画像） */
+.item-info-header {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.item-header-img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    background: #ddd;
+    border: 1px solid var(--line);
+}
+
+.item-text-details .item-name-header {
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #111;
+    margin: 0 0 10px;
+}
+
+.item-text-details .item-price-header {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+}
+
+/* ------------------------------
+   メッセージリスト（吹き出し）
+------------------------------ */
 .chat-history {
-    flex-grow: 1;
+    flex: 1;
     overflow-y: auto;
-    padding: 30px;
+    padding: 26px 28px 20px;
     display: flex;
     flex-direction: column;
 }
 
 .message-bubble {
-    max-width: 65%;
-    margin-bottom: 20px;
-    padding: 15px;
-    border-radius: 4px;
-    background-color: #D9D9D9;
-    line-height: 1.6;
-    word-wrap: break-word;
+    max-width: 66%;
+    background: #fff;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 8px 0 18px;
     position: relative;
+    color: #000;
 }
 
 .message-bubble.sender {
@@ -203,52 +291,51 @@
 
 .message-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 8px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .user-icon {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
+    background: #d9d9d9;
     object-fit: cover;
-    background-color: #D9D9D9;
 }
 
 .user-name {
-    font-family: "Inter", sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 20px;
-    color: #000000;
+    color: #000;
 }
+
 
 .message-text {
+    margin: 4px 0;
+    width: 461px;
+    height: 60px;
     font-size: 15px;
-    color: #000;
-    margin: 5px 0;
-}
-
-.message-time {
-    font-size: 12px;
-    color: #5f5f5f;
+    padding: 5px;
+    line-height: 1.6;
+    border-radius: 4px;
+    background-color: #D9D9D9;
 }
 
 .message-image {
     margin-top: 8px;
     max-width: 100%;
     border-radius: 6px;
+    border: 1px solid #ccc;
 }
 
-/* =====================================================
-   編集・削除ボタン
-===================================================== */
+/* 編集/削除 */
 .message-actions {
     display: flex;
     gap: 10px;
@@ -259,27 +346,26 @@
 .delete-btn,
 .save-btn,
 .cancel-btn {
-    background-color: #5F5F5F;
-    color: #fff;
+    background: #fff;
+    color: #5F5F5F;
+    font-weight: 400;
     border: none;
     border-radius: 4px;
     padding: 6px 10px;
-    font-size: 0.85rem;
+    font-size: 15px;
     text-decoration: none;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity .15s ease;
 }
 
 .edit-toggle-btn:hover,
 .delete-btn:hover,
 .save-btn:hover,
 .cancel-btn:hover {
-    opacity: 0.8;
+    opacity: .85;
 }
 
-/* =====================================================
-   編集フォーム (:target制御)
-===================================================== */
+/* 編集フォーム（:target） */
 .edit-form {
     display: none;
     margin-top: 10px;
@@ -297,139 +383,25 @@
     width: 100%;
     border: 1px solid #bbb;
     border-radius: 4px;
-    padding: 6px;
-    font-size: 14px;
+    padding: 8px;
     resize: none;
+    font-size: 14px;
 }
 
 .edit-controls {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
-/* =====================================================
-   削除モーダル・取引完了モーダル (共通)
-   :targetで表示制御
-===================================================== */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* :target指定で表示 */
-.modal-overlay:target {
-    display: flex;
-}
-
-.modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 30px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    animation: fadeIn 0.25s ease;
-}
-
-.modal-content.small {
-    max-width: 380px;
-}
-
-.modal-content h3 {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #000;
-    margin-bottom: 10px;
-}
-
-.modal-content p {
-    color: #333;
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-}
-
-/* =====================================================
-   星評価（取引完了モーダル用）
-===================================================== */
-.rating-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin: 20px 0;
-}
-
-.rating-area input {
-    display: none;
-}
-
-.rating-area label {
-    width: 40px;
-    height: 40px;
-    background-image: url('/img/star gray.png');
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.rating-area label:hover,
-.rating-area input:checked~label {
-    background-image: url('/img/star yellow.png');
-    transform: scale(1.1);
-}
-
-/* =====================================================
-   各種ボタン共通
-===================================================== */
-.complete-confirm-btn {
-    width: 100%;
-    background-color: #5F5F5F;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.complete-confirm-btn:hover {
-    opacity: 0.85;
-}
-
-.cancel-btn {
-    display: inline-block;
-    background: #999;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: opacity 0.2s;
-}
-
-.cancel-btn:hover {
-    opacity: 0.8;
-}
-
-/* =====================================================
-   入力フォームエリア
-===================================================== */
+/* ------------------------------
+   入力エリア
+------------------------------ */
 .chat-input-area {
-    padding: 20px 30px;
-    border-top: 1px solid #ccc;
-    background-color: #fff;
+    background: #fff;
+    border-top: 1px solid var(--line);
+    padding: 16px 22px;
 }
 
 .chat-form {
@@ -440,71 +412,71 @@
 
 .message-input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: none;
+    min-height: 56px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px;
     font-size: 14px;
+    resize: vertical;
 }
 
 .form-controls {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .image-upload-label {
-    background-color: #5F5F5F;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: #000;
+    border: 2px solid var(--brand);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 700;
     cursor: pointer;
+    transition: filter .15s ease;
+}
+
+.image-upload-label i {
     font-size: 14px;
-    transition: opacity 0.2s;
 }
 
 .image-upload-label:hover {
-    opacity: 0.8;
+    filter: brightness(0.97);
 }
 
 .send-button {
-    background-color: #5F5F5F;
-    color: white;
-    padding: 8px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand);
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    transition: opacity 0.2s;
+    border-radius: 999px;
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform .15s ease, filter .15s ease;
 }
 
 .send-button:hover {
-    opacity: 0.8;
+    transform: translateY(-1px);
+    filter: brightness(0.98);
 }
 
-/* =====================================================
-   ステータステキスト
-===================================================== */
-.trade-pending-text,
-.trade-completed-text {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 0.95rem;
-    color: #5F5F5F;
-    font-weight: bold;
-}
-
-/* =====================================================
-   バリデーションメッセージ
-===================================================== */
+/* エラーメッセージ */
 .chat-error-box {
-    background-color: #ffe9e9;
+    background: #ffe9e9;
     border: 1px solid #ffb3b3;
     color: #c0392b;
     border-radius: 6px;
-    padding: 10px 15px;
-    margin-bottom: 10px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
 }
 
 .chat-error-box ul {
@@ -513,17 +485,114 @@
 }
 
 .chat-error-box li {
-    font-size: 0.9rem;
     list-style: disc;
+    font-size: .9rem;
 }
 
-/* =====================================================
-   アニメーション
-===================================================== */
-@keyframes fadeIn {
+/* -------------------------------------------------
+   入力欄（メッセージ＋画像追加＋送信）横並び用
+------------------------------------------------- */
+.input-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/*  メッセージ入力欄 */
+.message-input {
+    flex: 1;
+    height: 44px;
+    border: 1px solid #CFCFCF;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #5F5F5F;
+    resize: none;
+    outline: none;
+    min-width: 0;
+    margin-right: 18px;
+}
+
+/*  「画像を追加」ボタン */
+.image-upload-label {
+    width: 143px;
+    height: 44px;
+    border: 1px solid #FF5555;
+    border-radius: 10px;
+    color: #FF5555;
+    background-color: #FFFFFF;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.image-upload-label:hover {
+    background-color: #FFF5F5;
+}
+
+/* 🔹 送信ボタン（背景画像使用） */
+.send-button {
+    width: 80px;
+    height: 61px;
+    background-image: url('/img/inputbuttun.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    /* アイコン非表示 */
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.send-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.95);
+}
+
+/* ------------------------------
+   モーダル（共通オーバーレイ）
+------------------------------ */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay:target {
+    display: flex;
+}
+
+/* モーダル内容（黄色の箱 + 角丸 + 影） */
+.modal-content {
+    width: min(520px, 92vw);
+    background: #FFFBEA;
+    border: 2px solid #F2E7B8;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .25);
+    overflow: hidden;
+    animation: modalIn .18s ease;
+    text-align: left;
+}
+
+
+@keyframes modalIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
 
     to {
@@ -532,49 +601,238 @@
     }
 }
 
-/* =====================================================
-   レスポンシブ対応
-===================================================== */
-@media (max-width: 768px) {
+/* モーダル内ヘッダー/本文風 */
+.modal-content h3 {
+    font-family: inter;
+    margin: 0;
+    padding: 18px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    background: #FFFBEA;
+    border-bottom: 1px solid var(--line);
+}
+
+.modal-content p {
+    margin: 0;
+    padding: 14px 20px 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* 星評価（画像ベース） */
+.rating-area {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.rating-area::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -14px;
+    width: 100%;
+    border-bottom: 1px solid var(--line);
+}
+
+.rating-area input {
+    display: none;
+}
+
+.rating-area label {
+    width: 44px;
+    height: 44px;
+    background-image: url('/img/star gray.png');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform .12s ease;
+}
+
+.rating-area label:hover {
+    transform: scale(1.08);
+}
+
+/* 既存マークアップ対応：選択以下を黄にする個別指定 */
+#star1:checked~label[for="star1"] {
+    background-image: url('/img/star yellow.png');
+}
+
+#star2:checked~label[for="star2"],
+#star2:checked~label[for="star1"] {
+    background-image: url('/img/star yellow.png');
+}
+
+#star3:checked~label[for="star3"],
+#star3:checked~label[for="star2"],
+#star3:checked~label[for="star1"] {
+    background-image: url('/img/star yellow.png');
+}
+
+#star4:checked~label[for="star4"],
+#star4:checked~label[for="star3"],
+#star4:checked~label[for="star2"],
+#star4:checked~label[for="star1"] {
+    background-image: url('/img/star yellow.png');
+}
+
+#star5:checked~label[for="star5"],
+#star5:checked~label[for="star4"],
+#star5:checked~label[for="star3"],
+#star5:checked~label[for="star2"],
+#star5:checked~label[for="star1"] {
+    background-image: url('/img/star yellow.png');
+}
+
+/* モーダルの送信ボタン（右下ピンク） */
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.complete-confirm-btn {
+    background-color: #FF8282;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 20px 10px 10px 0;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.submit-btn.complete-confirm-btn:hover {
+    filter: brightness(0.97);
+    transform: translateY(-1px);
+}
+
+/* ------------------------------
+   幅別レイアウト調整
+------------------------------ */
+
+/* PC 1400–1540px：横幅に合わせて見出しサイズ最適化 */
+@media (min-width:1400px) and (max-width:1540px) {
+    .item-text-details .item-name-header {
+        font-size: 38px;
+    }
+
+    .item-text-details .item-price-header {
+        font-size: 26px;
+    }
+
+    .item-header-img {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* Tablet 768–850px：2カラム維持しつつ詰める */
+@media (min-width:768px) and (max-width:850px) {
+    .chat-wrapper {
+        margin: 24px auto;
+    }
+
+    .sidebar {
+        width: 260px;
+        padding: 18px 14px;
+    }
+
+    .main-chat-area {
+        width: calc(100% - 260px);
+    }
+
+    .item-header-img {
+        width: 140px;
+        height: 140px;
+    }
+
+    .item-text-details .item-name-header {
+        font-size: 32px;
+    }
+
+    .item-text-details .item-price-header {
+        font-size: 24px;
+    }
+
+    .message-bubble {
+        max-width: 72%;
+    }
+}
+
+/* モバイル（<768px）：縦1カラム */
+@media (max-width:768px) {
     .chat-wrapper {
         flex-direction: column;
         margin: 0;
-        min-height: 100vh;
+        border-radius: 0;
         box-shadow: none;
+        min-height: 100vh;
     }
 
     .sidebar {
         width: 100%;
-        border-bottom: 1px solid #ddd;
         border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, .25);
     }
 
     .main-chat-area {
         width: 100%;
     }
 
+    .item-info-header {
+        align-items: flex-start;
+    }
+
+    .item-header-img {
+        width: 120px;
+        height: 120px;
+    }
+
+    .item-text-details .item-name-header {
+        font-size: 28px;
+    }
+
+    .item-text-details .item-price-header {
+        font-size: 22px;
+    }
+
     .chat-history {
-        padding: 15px;
+        padding: 18px 16px;
     }
 
     .message-bubble {
-        max-width: 85%;
-        padding: 10px;
+        max-width: 86%;
+        padding: 12px;
     }
 
     .user-icon {
-        width: 45px;
-        height: 45px;
+        width: 46px;
+        height: 46px;
     }
 
     .user-name {
         font-size: 16px;
     }
 
-    .image-upload-label,
+    .form-controls {
+        flex-direction: column;
+        gap: 12px;
+    }
+
     .send-button {
         width: 100%;
-        text-align: center;
-        margin-top: 10px;
+        height: 48px;
+        border-radius: 10px;
+    }
+
+    .image-upload-label {
+        width: 100%;
+        justify-content: center;
     }
 }

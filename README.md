@@ -11,13 +11,27 @@ make init
 ※Makefileは実行するコマンドを省略することができる便利な設定ファイルです。コマンドの入力を効率的に行えるようになります。<br>
 
 ## メール認証
-maihogというツールを使用しています。<br>
-以下のリンクから会員登録をしてください。　<br>
-https://mailtrap.io/
+開発環境では **Mailhog** を使用しています。  
+Mailhog はローカルで送信メールを確認できるツールです。
+メール確認方法：
 
-メールボックスのIntegrationsから 「laravel 7.x and 8.x」を選択し、　<br>
-.envファイルのMAIL_MAILERからMAIL_ENCRYPTIONまでの項目をコピー＆ペーストしてください。　<br>
-MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。　
+Docker 起動後、ブラウザで以下のURLにアクセス
+http://localhost:8025
+
+送信された認証メールなどが Mailhog の受信ボックスに表示されます。
+
+
+`.env` の設定例：
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="no-reply@coachtech-fleamarket.com"
+MAIL_FROM_NAME="COACHTECHフリマ"
+```
 
 ## Stripeについて
 コンビニ支払いとカード支払いのオプションがありますが、決済画面にてコンビニ支払いを選択しますと、レシートを印刷する画面に遷移します。そのため、カード支払いを成功させた場合に意図する画面遷移が行える想定です。<br>
@@ -32,71 +46,103 @@ STRIPE_SECRET_KEY="シークレットキー"
 https://docs.stripe.com/payments/checkout?locale=ja-JP
 ## テーブル仕様
 ### usersテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| id | bigint | ◯ |  | ◯ |  |
-| name | varchar(255) |  |  | ◯ |  |
-| email | varchar(255) |  | ◯ | ◯ |  |
-| email_verified_at | timestamp |  |  |  |  |
-| password | varchar(255) |  |  | ◯ |  |
-| remember_token | varchar(100) |  |  |  |  |
-| created_at | timestamp |  |  |  |  |
-| updated_at | timestamp |  |  |  |  |
+| カラム名           | 型           | PK | UK | NN | FK |
+| ----------------- | ------------ | -- | -- | -- | -- |
+| id                | bigint       | ◯ |    | ◯ |    |
+| name              | varchar(255) |    |    | ◯ |    |
+| email             | varchar(255) |    | ◯ | ◯ |    |
+| email_verified_at | timestamp    |    |    |    |    |
+| password          | varchar(255) |    |    | ◯ |    |
+| remember_token    | varchar(100) |    |    |    |    |
+| created_at        | timestamp    |    |    |    |    |
+| updated_at        | timestamp    |    |    |    |    |
+
 
 ### profilesテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| id | bigint | ◯ |  | ◯ |  |
-| user_id | bigint |  |  | ◯ | users(id) |
-| img_url | varchar(255) |  |  |  |  |
-| postcode | varchar(255) |  |  | ◯ |  |
-| address | varchar(255) |  |  | ◯ |  |
-| building | varchar(255) |  |  |  |  |
-| created_at | timestamp |  |  |  |  |
-| updated_at | timestamp |  |  |  |  |
+| カラム名   | 型            | PK | UK | NN | FK        |
+| ---------- | ------------ | -- | -- | -- | --------- |
+| id         | bigint       | ◯ |    | ◯  |          |
+| user_id    | bigint       |    |    | ◯  | users(id)|
+| img_url    | varchar(255) |    |    |    |           |
+| postcode   | varchar(255) |    |    | ◯  |          |
+| address    | varchar(255) |    |    | ◯  |          |
+| building   | varchar(255) |    |    |    |           |
+| created_at | timestamp    |    |    |    |           |
+| updated_at | timestamp    |    |    |    |           |
+
 
 ### itemsテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| id | bigint | ◯ |  | ◯ |  |
-| user_id | bigint |  |  | ◯ | users(id) |
-| condition_id | bigint |  |  | ◯ | condtions(id) |
-| name | varchar(255) |  |  | ◯ |  |
-| price | int |  |  | ◯ |  |
-| brand | varchar(255) |  |  |  |  |
-| description | varchar(255) |  |  | ◯ |  |
-| img_url | varchar(255) |  |  | ◯ |  |
-| created_at | timestamp |  |  |  |  |
-| updated_at | timestamp |  |  |  |  |
+| カラム名         | 型            | PK | UK | NN | FK                 |
+| ------------ | ------------ | -- | -- | -- | ------------------ |
+| id           | bigint       | ◯  |    | ◯  |                    |
+| user_id      | bigint       |    |    | ◯  | users(id)          |
+| condition_id | bigint       |    |    | ◯  | **conditions(id)** |
+| name         | varchar(255) |    |    | ◯  |                    |
+| price        | int          |    |    | ◯  |                    |
+| brand        | varchar(255) |    |    |    |                    |
+| description  | **text**     |    |    | ◯  |                    |
+| img_url      | varchar(255) |    |    | ◯  |                    |
+| created_at   | timestamp    |    |    |    |                    |
+| updated_at   | timestamp    |    |    |    |                    |
+
 
 ### commentsテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| id | bigint | ◯ |  | ◯ |  |
-| user_id | bigint |  |  | ◯ | users(id) |
-| item_id | bigint |  |  | ◯ | items(id) |
-| comment | varchar(255) |  |  | ◯ |  |
-| created_at | timestamp |  |  |  |  |
-| updated_at | timestamp |  |  |  |  |
+| カラム名       | 型            | PK | UK | NN | FK        |
+| ---------- | ------------ | -- | -- | -- | --------- |
+| id         | bigint       | ◯  |    | ◯  |           |
+| user_id    | bigint       |    |    | ◯  | users(id) |
+| item_id    | bigint       |    |    | ◯  | items(id) |
+| comment    | varchar(255) |    |    | ◯  |           |
+| created_at | timestamp    |    |    |    |           |
+| updated_at | timestamp    |    |    |    |           |
+
 
 ### likesテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| user_id | bigint |  | ◯(item_idとの組み合わせ) | ◯ | users(id) |
-| item_id | bigint |  | ◯(user_idとの組み合わせ) | ◯ | items(id) |
-| created_at | timestamp |  |  |  |  |
-| updated_at | timestamp |  |  |  |  |
+| カラム名       | 型         | PK/UK    | NN | FK        |
+| ---------- | --------- | -------- | -- | --------- |
+| user_id    | bigint    | **複合UK** | ◯  | users(id) |
+| item_id    | bigint    | **複合UK** | ◯  | items(id) |
+| created_at | timestamp |          |    |           |
+| updated_at | timestamp |          |    |           |
+
 
 ### sold_itemsテーブル
-| カラム名 | 型 | primary key | unique key | not null | foreign key |
-| --- | --- | --- | --- | --- | --- |
-| user_id | bigint |  |  | ◯ | users(id) |
-| item_id | bigint |  |  | ◯ | items(id) |
-| sending_postcode | varchar(255) |  |  | ◯ |  |
-| sending_address | varchar(255) |  |  | ◯ |  |
-| sending_building | varchar(255) |  |  |  |  |
-| created_at | created_at |  |  |  |  |
-| updated_at | updated_at |  |  |  |  |
+| カラム名             | 型            | PK | UK | NN               | FK        |
+| ---------------- | ------------ | -- | -- | ---------------- | --------- |
+| id               | bigint       | ◯  |    | ◯                |           |
+| item_id          | bigint       |    |    | ◯                | items(id) |
+| **buyer_id**     | bigint       |    |    | ◯                | users(id) |
+| **is_completed** | boolean      |    |    | ◯(default false) |           |
+| sending_postcode | varchar(255) |    |    | ◯                |           |
+| sending_address  | varchar(255) |    |    | ◯                |           |
+| sending_building | varchar(255) |    |    |                  |           |
+| created_at       | timestamp    |    |    |                  |           |
+| updated_at       | timestamp    |    |    |                  |           |
+
+
+### messagesテーブル
+| カラム名         | 型            | PK | UK | NN               | FK             |
+| ------------ | ------------ | -- | -- | ---------------- | -------------- |
+| id           | bigint       | ◯  |    | ◯                |                |
+| sold_item_id | bigint       |    |    | ◯                | sold_items(id) |
+| user_id      | bigint       |    |    | ◯                | users(id)      |
+| message      | text         |    |    | ◯                |                |
+| image_url    | varchar(255) |    |    |                  |                |
+| **is_read**  | boolean      |    |    | ◯(default false) |                |
+| created_at   | timestamp    |    |    |                  |                |
+| updated_at   | timestamp    |    |    |                  |                |
+
+### ratingsテーブル
+| カラム名          | 型         | PK | UK | NN     | FK             |
+| ------------- | --------- | -- | -- | ------ | -------------- |
+| id            | bigint    | ◯  |    | ◯      |                |
+| sold_item_id  | bigint    |    |    | ◯      | sold_items(id) |
+| reviewer_id   | bigint    |    |    | ◯      | users(id)      |
+| rated_user_id | bigint    |    |    | ◯      | users(id)      |
+| rating        | tinyint   |    |    | ◯(1–5) |                |
+| comment       | text      |    |    |        |                |
+| created_at    | timestamp |    |    |        |                |
+| updated_at    | timestamp |    |    |        |                |
 
 ### category_itemsテーブル
 | カラム名 | 型 | primary key | unique key | not null | foreign key |
@@ -121,6 +167,8 @@ https://docs.stripe.com/payments/checkout?locale=ja-JP
 | condition | varchar(255) |  |  | ◯ |  |
 | created_at | timestamp |  |  |  |  |
 | updated_at | timestamp |  |  |  |  |
+
+
 
 ## ER図
 ![alt](ER.png)

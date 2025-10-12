@@ -17,18 +17,28 @@
         <div class="user__info">
             <div class="user__img">
                 @if ($user->profile && $user->profile->img_url)
-                    <img class="user__icon" src="{{ Storage::url($user->profile->img_url) }}" alt="プロフィール画像">
+                    @php
+                        // 保存されているパスをそのまま出力（storage/ が含まれている想定）
+                        $imgPath = $user->profile->img_url;
+
+                        // もし /storage/ で始まらない場合は補完
+                        if (!Str::startsWith($imgPath, 'storage/')) {
+                            $imgPath = 'storage/' . $imgPath;
+                        }
+                    @endphp
+
+                    <img class="user__icon" src="{{ asset($imgPath) }}" alt="プロフィール画像">
                 @else
                     <img class="user__icon" src="{{ asset('img/icon.png') }}" alt="デフォルト画像">
                 @endif
             </div>
+
 
             <div class="user-details-group">
                 <p class="user__name">{{ $user->name }}</p>
 
                 {{-- 出品者評価 --}}
                 <div class="rating-box">
-                    <h3>出品者評価</h3>
                     @if ($averageRating !== null)
                         <div class="rating-score">
                             @php
@@ -44,7 +54,6 @@
                                     <span class="star empty">★</span>
                                 @endif
                             @endfor
-                            <span class="score-text">({{ number_format($averageRating, 1) }})</span>
                         </div>
                     @else
                         <p class="no-rating">まだ評価がありません。</p>
@@ -78,7 +87,7 @@
                    class="{{ request()->query('page') === 'in-progress' ? 'active-tab' : '' }}">
                     取引中の商品
                 </a>
-                {{-- ✅ 未読メッセージ総数バッジ --}}
+                {{--  未読メッセージ総数バッジ --}}
                 @if (!empty($totalUnread) && $totalUnread > 0)
                     <span class="unread-badge-tab">{{ $totalUnread }}</span>
                 @endif

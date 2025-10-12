@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('/css/reset.css')  }}">
     <link rel="stylesheet" href="{{ asset('/css/common.css')  }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     @yield('css')
 </head>
 

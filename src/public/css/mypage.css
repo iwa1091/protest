@@ -34,12 +34,6 @@
 }
 
 /* FN005: 評価表示のスタイル */
-.rating-box h3 {
-    font-size: 14px;
-    font-weight: normal;
-    color: #555;
-    margin-bottom: 5px;
-}
 
 .rating-score .star {
     font-size: 18px;
@@ -49,13 +43,6 @@
 
 .rating-score .star.filled {
     color: #ffcc00;
-    /* 塗りつぶされた星の色 */
-}
-
-.rating-score .score-text {
-    margin-left: 5px;
-    font-weight: bold;
-    color: #333;
 }
 
 .no-rating {
@@ -91,11 +78,7 @@
     transition: border-color 0.3s;
 }
 
-.border__list a.active-tab {
-    color: #000;
-    border-bottom-color: #000;
-    /* アクティブなタブの下線 */
-}
+
 
 /* アイテム一覧のスタイル */
 .items {
@@ -167,21 +150,18 @@
     top: 5px;
     left: 5px;
     z-index: 10;
-    background-color: #ff4500;
+    background-color: #ff0000;
     /* 目立つ色 */
     color: white;
     font-size: 12px;
     font-weight: bold;
     padding: 2px 7px;
     border-radius: 50%;
-    /* 丸形 */
     min-width: 25px;
-    /* 数字が1桁でも2桁でも見やすいように */
     height: 25px;
     line-height: 21px;
     text-align: center;
     border: 2px solid white;
-    /* 画像との境界を明確にする */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -239,11 +219,22 @@
 
 /* タブリストレイアウト調整 */
 .tab-in-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     position: relative;
 }
 
 .unread-badge-tab {
-    position: absolute;
-    top: -5px;
-    right: -35px;
+    position: static;
+    background-color: #FF0000;
+    color: #FFFFFF;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 999px;
+    padding: 3px 7px;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1;
 }

@@ -130,7 +130,7 @@ class UserController extends Controller
         }
 
         /**
-         * ✅ 出品者としての平均評価算出
+         *  出品者としての平均評価算出
          */
         $ratings = Rating::where('rated_user_id', $user->id)->get();
         $averageRating = $ratings->isNotEmpty()
@@ -138,7 +138,7 @@ class UserController extends Controller
             : null;
 
         /**
-         * ✅ ビューに全データ送信
+         *  ビューに全データ送信
          */
         return view('mypage', [
             'user'            => $user,
