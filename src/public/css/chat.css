@@ -160,14 +160,10 @@
 .partner-info {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin:0 0 10px 0;
+    justify-content: flex-start;
+    gap: 8px;
     flex-wrap: wrap;
-}
-/* partner-info 下に全幅ラインを表示 */
-.partner-info {
-    position: relative;
+    position:relative;
     padding-bottom: 12px;
     margin-bottom: 16px;
 }
@@ -211,6 +207,7 @@
 .complete-trade-inline {
     margin-left: auto;
 }
+
 
 .complete-trade-button {
     background: var(--accent);
@@ -340,6 +337,7 @@
     display: flex;
     gap: 10px;
     margin-top: 6px;
+    justify-content: flex-end;
 }
 
 .edit-toggle-btn,
@@ -363,6 +361,29 @@
 .save-btn:hover,
 .cancel-btn:hover {
     opacity: .85;
+}
+
+.edit-toggle-btn,
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 12px;
+    line-height: 1;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 400;
+    background: #fff;
+    color: #5F5F5F;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity .15s ease;
+}
+
+.edit-toggle-btn:hover,
+.delete-btn:hover {
+    opacity: 0.85;
 }
 
 /* 編集フォーム（:target） */
