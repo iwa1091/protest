@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ChatMessageRequest;
 use App\Http\Requests\ReviewRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\TradeCompletedMail;
 
 class ChatController extends Controller
 {
@@ -183,11 +186,32 @@ class ChatController extends Controller
             abort(403, '権限がありません。');
         }
 
+        //  出品者情報を取得
+        $seller = $soldItem->item->user;
+
+        try {
+            //  出品者へメール送信
+            Mail::to($seller->email)->send(new TradeCompletedMail($soldItem));
+
+            Log::info(' 出品者宛て完了通知メール送信成功', [
+                'seller_name'  => $seller->name,
+                'seller_email' => $seller->email,
+                'item_id'      => $item_id,
+                'buyer_id'     => $user->id,
+            ]);
+        } catch (\Exception $e) {
+            Log::error(' 出品者宛メール送信エラー: ' . $e->getMessage(), [
+                'seller_email' => $seller->email ?? '不明',
+                'item_id'      => $item_id,
+            ]);
+        }
+
+        //  モーダル表示フラグ設定
         session()->put('show_review_modal', true);
 
         return redirect()->route('chat.show', ['item_id' => $item->id])
-            ->with('success', '取引を完了しました。評価をお願いします。');
-    }
+            ->with('success', '取引を完了しました。出品者に通知を送りました。評価をお願いします。');
+}
 
     /**
      * 評価送信（共通）

@@ -89,7 +89,6 @@ class PurchaseController extends Controller
             $sellerName  = $soldItem->item->user->name ?? '出品者';
 
             try {
-                Mail::to($sellerEmail)->send(new TradeCompletedMail($soldItem));
 
                 Log::info('✅ 出品者宛てメール送信成功', [
                     'seller_name'  => $sellerName,
@@ -112,7 +111,7 @@ class PurchaseController extends Controller
     }
 
     /**
-     * ✅ SoldItem 登録（共通関数）
+     *  SoldItem 登録（共通関数）
      */
     protected function markAsSold($session)
     {

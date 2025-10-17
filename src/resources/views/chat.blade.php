@@ -211,7 +211,7 @@
                     <div class="form-controls">
                         <label for="image_upload" class="image-upload-label">
                             画像を追加
-                            <input type="file" name="image" id="image_upload" accept=".jpeg,.png" style="display:none;">
+                            <input type="file" name="image" id="image_upload"  style="display:none;">
                         </label>
                         <button type="submit" class="send-button">
                             <i class="fas fa-paper-plane"></i>

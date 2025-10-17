@@ -103,7 +103,7 @@
                 <div class="item">
                     <a href="{{ route('chat.show', ['item_id' => $soldItem->item->id]) }}">
                         <div class="item__img--container">
-                            {{-- ✅ 商品ごとの未読数バッジ --}}
+                            {{--  商品ごとの未読数バッジ --}}
                             @if ($soldItem->unread_count > 0)
                                 <span class="unread-badge-item">{{ $soldItem->unread_count }}</span>
                             @endif

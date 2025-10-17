@@ -60,24 +60,24 @@
 /* タブ全体の調整 */
 .border__list {
     display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 40px;
     list-style: none;
     padding: 0;
     margin: 0;
     border-bottom: 2px solid #ccc;
-    justify-content: space-between;
 }
 
 /* 各タブを均等配置 */
 .border__list li {
-    flex: 1;
+    flex: 0;
     text-align: center;
 }
 
 /* aタグをブロック化し、幅を固定 */
 .border__list a {
     display: block;
-    /* ← inline-block を block に変更 */
-    width: 100%;
     padding: 10px 0;
     color: #555;
     text-decoration: none;
@@ -85,14 +85,12 @@
     border-bottom: 2px solid transparent;
     transition: border-color 0.3s;
     white-space: nowrap;
-    /* ← 折り返し防止 */
 }
 
 /* 「取引中の商品」+ バッジ の整列 */
 .tab-in-progress {
     display: flex;
     justify-content: center;
-    align-items: center;
     align-items: center;
     gap: 1px;
 }
@@ -294,10 +292,9 @@
    タブレット(768–850px)もPCデザインを維持する
 ===================================================== */
 @media (min-width:768px) and (max-width:850px) {
-    html {
+    /*html {
         zoom: 0.9;
-        /* 全体を90%縮小して表示 */
-    }
+    } */
 
     .user {
         flex-direction: row !important;
@@ -317,12 +314,12 @@
     }
 
     .border__list {
+        justify-content: center !important;
         flex-wrap: nowrap !important;
-        justify-content: flex-start !important;
     }
 
     .border__list li {
-        margin-right: 24px !important;
+        flex: 0 !important;
     }
 
     .border__list a {
